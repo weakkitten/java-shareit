@@ -1,13 +1,12 @@
 package ru.practicum.shareit.user;
 
+import lombok.Data;
 import org.hibernate.validator.constraints.UniqueElements;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Positive;
 
-/**
- * TODO Sprint add-controllers.
- */
+@Data
 public class User {
     @Positive
     private int id;
