@@ -1,15 +1,15 @@
 package ru.practicum.shareit.user;
 
+import lombok.Builder;
 import lombok.Data;
+import lombok.NonNull;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.Positive;
+import javax.validation.constraints.*;
 
 @Data
+@Builder
 public class User {
-    @Positive
-    private int id;
-    private String name;
-    @Email
-    private String email;
+    @PositiveOrZero protected int id;
+    protected String name;
+    @NonNull @Email @NotBlank protected String email;
 }

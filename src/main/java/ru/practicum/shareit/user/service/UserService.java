@@ -9,13 +9,20 @@ import ru.practicum.shareit.user.repository.InMemoryUserRepository;
 @RequiredArgsConstructor
 public class UserService {
     private final InMemoryUserRepository userRepository;
+    private static int userCount = 0;
 
     public User getUser(int id) {
         return userRepository.getUser(id);
     }
 
     public User addUser(User user) {
-        user.setId(user.getId() + 1);
+        if (user.getId() == 0) {
+            userCount++;
+            user.setId(userCount);
+        } else {
+            user.setId(user.getId() + 1);
+            userCount++;
+        }
         userRepository.addUser(user.getId(), user);
         return userRepository.getUser(user.getId());
     }
@@ -25,7 +32,9 @@ public class UserService {
     }
 
     public User updateUser(int id, User user) {
-        return userRepository.updateUser(id, user);
+        user.setId(user.getId() + 1);
+        userRepository.updateUser(id, user);
+        return userRepository.getUser(id);
     }
 
     public boolean checkEmail(String email) {

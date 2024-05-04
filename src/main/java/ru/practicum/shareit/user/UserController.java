@@ -8,6 +8,8 @@ import ru.practicum.shareit.error.exception.BadEmailException;
 import ru.practicum.shareit.user.repository.InMemoryUserRepository;
 import ru.practicum.shareit.user.service.UserService;
 
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping(path = "/users")
 @Slf4j
@@ -15,10 +17,11 @@ import ru.practicum.shareit.user.service.UserService;
 public class UserController {
     private final UserService service;
     @PostMapping
-    public User createUser(@RequestBody User user) {
+    public User createUser(@Valid @RequestBody User user) {
+        log.info("Начало операции по добавлению пользователя - " + user);
         log.info("Проверка email");
         if (!service.checkEmail(user.getEmail())) {
-            log.info("Начало операции по добавлению пользователя - " + user);
+            log.info("Такого email нет в списке используемых");
             return service.addUser(user);
         }else {
             throw new BadEmailException("Такой email уже используется");
@@ -26,7 +29,7 @@ public class UserController {
     }
 
     @PatchMapping("/{userId}")
-    public User updateUser(@PathVariable int userId,@RequestBody User user) {
+    public User updateUser(@PathVariable int userId,@Valid @RequestBody User user) {
         return service.updateUser(userId, user);
     }
 }

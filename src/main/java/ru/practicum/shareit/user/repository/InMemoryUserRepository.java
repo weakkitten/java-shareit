@@ -15,7 +15,7 @@ import java.util.Map;
 @Repository
 public class InMemoryUserRepository {
     private final Map<Integer, User> userRepository = new HashMap<>();
-    private final List<String> emailList = new ArrayList<>();
+    private final Map<Integer, String> emailList = new HashMap<>();
 
     public User getUser(int id) {
         return userRepository.get(id);
@@ -23,18 +23,19 @@ public class InMemoryUserRepository {
 
     public void addUser(int id, User user) {
         userRepository.put(id, user);
-        emailList.add(user.getEmail());
+        emailList.put(id, user.getEmail());
     }
 
     public void removeUser(int id) {
         userRepository.remove(id);
     }
 
-    public User updateUser(int id, User user) {
-        return userRepository.put(id, user);
+    public void updateUser(int id, User user) {
+        userRepository.put(id, user);
+        emailList.put(id, user.getEmail());
     }
 
     public boolean checkEmail(String email) {
-        return emailList.contains(email);
+        return emailList.containsValue(email);
     }
 }
