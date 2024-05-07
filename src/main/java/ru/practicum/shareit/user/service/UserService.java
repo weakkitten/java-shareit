@@ -2,8 +2,10 @@ package ru.practicum.shareit.user.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.user.User;
+import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.InMemoryUserRepository;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -32,12 +34,23 @@ public class UserService {
     }
 
     public User updateUser(int id, User user) {
-        user.setId(user.getId() + 1);
+        user.setId(id);
+        User userRep = userRepository.getUser(id);
+        if (user.getName() == null) {
+            user.setName(userRep.getName());
+        }
+        if (user.getEmail() == null) {
+            user.setEmail(userRep.getEmail());
+        }
         userRepository.updateUser(id, user);
         return userRepository.getUser(id);
     }
 
     public boolean checkEmail(String email) {
         return userRepository.checkEmail(email);
+    }
+
+    public List<User> getAllUsers() {
+        return userRepository.getAllUsers();
     }
 }

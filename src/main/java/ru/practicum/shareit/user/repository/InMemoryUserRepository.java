@@ -3,7 +3,7 @@ package ru.practicum.shareit.user.repository;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-import ru.practicum.shareit.user.User;
+import ru.practicum.shareit.user.model.User;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,5 +37,9 @@ public class InMemoryUserRepository {
 
     public boolean checkEmail(String email) {
         return emailList.containsValue(email);
+    }
+
+    public List<User> getAllUsers() {
+        return new ArrayList<>(userRepository.values());
     }
 }
