@@ -16,6 +16,7 @@ import java.util.Map;
 public class InMemoryUserRepository {
     private final Map<Integer, User> userRepository = new HashMap<>();
     private final Map<Integer, String> emailList = new HashMap<>();
+    private int userCount;
 
     public User getUser(int id) {
         return userRepository.get(id);

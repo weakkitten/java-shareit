@@ -15,6 +15,7 @@ import java.util.Map;
 @Repository
 public class InMemoryItemRepository {
     private final Map<Integer, Item> itemRepository = new HashMap<>();
+    private int itemCount;
 
     public void createItem(int id, Item item) {
         itemRepository.put(id, item);

@@ -19,45 +19,38 @@ import java.util.List;
 public class ItemService {
     private final InMemoryItemRepository itemRepository;
     private final InMemoryUserRepository userRepository;
-    private static int itemCount;
 
-    public Item createItem(int id, ItemDto itemDto) {
-        if (userRepository.getUser(id) == null) {
+    public ItemDtoGet createItem(int userId, ItemDto itemDto) {
+        if (userRepository.getUser(userId) == null) {
             throw new NotFoundException("Нет такого пользователя");
         }
-        if(itemDto.getId() == 0) {
-            itemCount++;
-            itemDto.setId(itemCount);
-        }else {
-            itemDto.setId(itemDto.getId() + 1);
-            itemCount++;
-        }
-        itemRepository.createItem(id, ItemMapper.toItem(id, itemDto));
-        return itemRepository.getItem(id);
+        itemRepository.setItemCount(itemRepository.getItemCount() + 1);
+        itemDto.setId(itemRepository.getItemCount());
+        itemRepository.createItem(itemRepository.getItemCount(), ItemMapper.toItem(userId, itemDto));
+        return ItemMapper.toItemDtoGet(itemRepository.getItem(itemRepository.getItemCount()));
     }
 
-    public Item updateItem(int itemId, int id, ItemDto itemDto) {
+    public ItemDtoGet updateItem(int itemId, int userId, ItemDto itemDto) {
         Item itemRep = itemRepository.getItem(itemId);
 
-        itemDto.setId(itemId);
-        if (itemRep.getOwner() != id) {
+        if (itemRep.getOwner() != userId) {
             throw new NotFoundException("Этот пользователь не имеет прав для редактирования");
         }
-        if (itemDto.getName() == null) {
-            itemDto.setName(itemRep.getName());
+        if (itemDto.getName() != null) {
+            itemRep.setName(itemDto.getName());
         }
-        if (itemDto.getDescription() == null) {
-            itemDto.setDescription(itemRep.getDescription());
+        if (itemDto.getDescription() != null) {
+            itemRep.setDescription(itemDto.getDescription());
         }
-        if (itemDto.getAvailable() == null) {
-            itemDto.setAvailable(itemRep.isAvailable());
+        if (itemDto.getAvailable() != null) {
+            itemRep.setAvailable(itemDto.getAvailable());
         }
-        itemRepository.updateItem(itemId, ItemMapper.toItem(id, itemDto));
-        return itemRepository.getItem(id);
+        itemRepository.updateItem(itemId, itemRep);
+        return ItemMapper.toItemDtoGet(itemRepository.getItem(itemId));
     }
 
-    public Item getItem(int itemId) {
-        return itemRepository.getItem(itemId);
+    public ItemDtoGet getItem(int itemId) {
+        return ItemMapper.toItemDtoGet(itemRepository.getItem(itemId));
     }
 
     public List<ItemDtoGet> getAllUserItems(int userId) {

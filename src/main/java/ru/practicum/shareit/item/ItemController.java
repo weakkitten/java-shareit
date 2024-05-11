@@ -14,23 +14,22 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/items")
-@Slf4j
 @RequiredArgsConstructor
 public class ItemController {
     private final ItemService service;
 
     @PostMapping
-    public Item createItem(@RequestHeader("X-Sharer-User-Id") int id, @RequestBody @Valid ItemDto itemDto) {
-        return service.createItem(id, itemDto);
+    public ItemDtoGet createItem(@RequestHeader("X-Sharer-User-Id") int userId, @RequestBody @Valid ItemDto itemDto) {
+        return service.createItem(userId, itemDto);
     }
 
     @PatchMapping("/{itemId}")
-    public Item updateItem(@PathVariable int itemId, @RequestHeader("X-Sharer-User-Id") int id, @RequestBody ItemDto itemDto) {
-        return service.updateItem(itemId, id, itemDto);
+    public ItemDtoGet updateItem(@PathVariable int itemId, @RequestHeader("X-Sharer-User-Id") int userId, @RequestBody ItemDto itemDto) {
+        return service.updateItem(itemId, userId, itemDto);
     }
 
     @GetMapping("/{itemId}")
-    public Item getItem(@PathVariable int itemId) {
+    public ItemDtoGet getItem(@PathVariable int itemId) {
         return service.getItem(itemId);
     }
 
@@ -41,6 +40,7 @@ public class ItemController {
 
     @GetMapping("/search?text={text}")
     public List<ItemDtoGet> searchItem(@PathVariable String text) {
+        System.out.println(text);
         return service.searchItem(text);
     }
 }

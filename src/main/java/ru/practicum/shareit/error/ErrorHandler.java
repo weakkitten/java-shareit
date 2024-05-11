@@ -25,4 +25,10 @@ public class ErrorHandler {
     public ErrorResponse handleBadEmailException(final BadEmailException e) {
         return new ErrorResponse("Такая почта уже используется", e.getMessage());
     }
+
+/*    @ExceptionHandler
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorResponse handleBadEmailException(final Exception e) {
+        return new ErrorResponse("Неизвестная ошибка", e.getMessage());
+    }*/
 }

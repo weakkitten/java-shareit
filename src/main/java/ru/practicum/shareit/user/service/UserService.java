@@ -15,7 +15,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserService {
     private final InMemoryUserRepository userRepository;
-    private static int userCount = 0;
 
     public UserDto getUser(int id) {
         return UserMapper.toUserDto(userRepository.getUser(id));
@@ -23,13 +22,8 @@ public class UserService {
 
     public UserDto addUser(UserDto userDto) {
         User user =  UserMapper.toUser(userDto);
-        if (user.getId() == 0) {
-            userCount++;
-            user.setId(userCount);
-        } else {
-            user.setId(user.getId() + 1);
-            userCount++;
-        }
+        userRepository.setUserCount(userRepository.getUserCount() + 1);
+        user.setId(userRepository.getUserCount());
         userRepository.addUser(user.getId(), user);
         return UserMapper.toUserDto(userRepository.getUser(user.getId()));
     }

@@ -21,15 +21,4 @@ public class ItemMapper {
                 .owner(id)
                 .build();
     }
-
-    public static ItemDto toItemDto(Item item) {
-        return new ItemDto(
-                item.getId(),
-                item.getName(),
-                item.getDescription(),
-                item.isAvailable(),
-                item.getOwner(),
-                item.getRequest()
-        );
-    }
 }
