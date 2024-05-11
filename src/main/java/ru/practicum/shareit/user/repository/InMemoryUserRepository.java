@@ -28,11 +28,20 @@ public class InMemoryUserRepository {
 
     public void removeUser(int id) {
         userRepository.remove(id);
+        emailList.remove(id);
     }
 
     public void updateUser(int id, User user) {
         userRepository.put(id, user);
         emailList.put(id, user.getEmail());
+    }
+
+    public void removeEmail(int id) {
+        emailList.remove(id);
+    }
+
+    public void addEmail(int id, String email) {
+        emailList.put(id, email);
     }
 
     public boolean checkEmail(String email) {

@@ -11,13 +11,4 @@ public class ItemDtoGet {
     private String name;
     private String description;
     private Boolean available;
-
-    public static ItemDtoGet toItemDtoGet(Item item) {
-        return new ItemDtoGet(
-                item.getId(),
-                item.getName(),
-                item.getDescription(),
-                item.isAvailable()
-        );
-    }
 }

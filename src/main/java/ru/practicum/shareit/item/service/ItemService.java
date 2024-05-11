@@ -6,6 +6,7 @@ import ru.practicum.shareit.error.exception.BadRequestException;
 import ru.practicum.shareit.error.exception.NotFoundException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemDtoGet;
+import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.InMemoryItemRepository;
 import ru.practicum.shareit.user.repository.InMemoryUserRepository;
@@ -31,7 +32,7 @@ public class ItemService {
             itemDto.setId(itemDto.getId() + 1);
             itemCount++;
         }
-        itemRepository.createItem(id, ItemDto.toItem(id, itemDto));
+        itemRepository.createItem(id, ItemMapper.toItem(id, itemDto));
         return itemRepository.getItem(id);
     }
 
@@ -51,7 +52,7 @@ public class ItemService {
         if (itemDto.getAvailable() == null) {
             itemDto.setAvailable(itemRep.isAvailable());
         }
-        itemRepository.updateItem(itemId, ItemDto.toItem(id, itemDto));
+        itemRepository.updateItem(itemId, ItemMapper.toItem(id, itemDto));
         return itemRepository.getItem(id);
     }
 
@@ -64,7 +65,7 @@ public class ItemService {
         List<ItemDtoGet> userList = new ArrayList<>();
         for (Item item : allItems) {
             if (item.getOwner() == userId) {
-                userList.add(ItemDtoGet.toItemDtoGet(item));
+                userList.add(ItemMapper.toItemDtoGet(item));
             }
         }
         return userList;
@@ -75,9 +76,9 @@ public class ItemService {
         List<ItemDtoGet> itemsList = new ArrayList<>();
         for (Item item : allItems) {
             if (item.getName().equals(text) && item.isAvailable()) {
-                itemsList.add(ItemDtoGet.toItemDtoGet(item));
+                itemsList.add(ItemMapper.toItemDtoGet(item));
             }else if (item.getDescription().contains(text) && item.isAvailable()) {
-                itemsList.add(ItemDtoGet.toItemDtoGet(item));
+                itemsList.add(ItemMapper.toItemDtoGet(item));
             }
         }
         return itemsList;
