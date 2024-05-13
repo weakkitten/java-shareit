@@ -38,8 +38,8 @@ public class UserService {
             user.setName(userDto.getName());
         }
         if (userDto.getEmail() != null) {
-            if (!userDto.getEmail().equals(user.getEmail())){
-                if (!checkEmail(userDto.getEmail())){
+            if (!userDto.getEmail().equals(user.getEmail())) {
+                if (!checkEmail(userDto.getEmail())) {
                     user.setEmail(userDto.getEmail());
                     userRepository.addEmail(user.getId(), user.getEmail());
                 } else {
