@@ -18,14 +18,15 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService service;
+
     @PostMapping
     public UserDto createUser(@Valid @RequestBody UserDto user) {//Скорее всего перенести логику в сервис
         log.info("Начало операции по добавлению пользователя - " + user);
         log.info("Проверка email");
-        if (!service.checkEmail(user.getEmail())) {
+        if (!service.checkEmail(user.getEmail())){
             log.info("Такого email нет в списке используемых");
             return service.addUser(user);
-        }else {
+        } else {
             throw new BadEmailException("Такой email уже используется");
         }
     }

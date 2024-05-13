@@ -39,10 +39,10 @@ public class UserService {
         }
         if (userDto.getEmail() != null) {
             if (!userDto.getEmail().equals(user.getEmail())) {
-                if (!checkEmail(userDto.getEmail())) {
+                if (!checkEmail(userDto.getEmail())){
                     user.setEmail(userDto.getEmail());
                     userRepository.addEmail(user.getId(), user.getEmail());
-                }else {
+                } else {
                     throw new BadEmailException("Такой email уже используется");
                 }
             }
