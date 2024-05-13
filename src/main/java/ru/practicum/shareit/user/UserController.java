@@ -20,10 +20,10 @@ public class UserController {
     private final UserService service;
 
     @PostMapping
-    public UserDto createUser(@Valid @RequestBody UserDto user){//Скорее всего перенести логику в сервис
+    public UserDto createUser(@Valid @RequestBody UserDto user) {
         log.info("Начало операции по добавлению пользователя - " + user);
         log.info("Проверка email");
-        if (!service.checkEmail(user.getEmail())){
+        if (!service.checkEmail(user.getEmail())) {
             log.info("Такого email нет в списке используемых");
             return service.addUser(user);
         } else {
