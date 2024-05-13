@@ -65,13 +65,15 @@ public class ItemService {
     }
 
     public List<ItemDtoGet> searchItem(String text) {
-        List<Item> allItems = itemRepository.returnItemList();
         List<ItemDtoGet> itemsList = new ArrayList<>();
-        for (Item item : allItems) {
-            if (item.getName().equals(text) && item.isAvailable()) {
-                itemsList.add(ItemMapper.toItemDtoGet(item));
-            }else if (item.getDescription().contains(text) && item.isAvailable()) {
-                itemsList.add(ItemMapper.toItemDtoGet(item));
+        if (!text.isBlank()) {
+            List<Item> allItems = itemRepository.returnItemList();
+            for (Item item : allItems) {
+                if ((item.getName().toLowerCase().contains(text.toLowerCase())
+                        || item.getDescription().toLowerCase().contains(text.toLowerCase())) &&  item.isAvailable()) {
+                    System.out.println("Попал сюда");
+                    itemsList.add(ItemMapper.toItemDtoGet(item));
+                }
             }
         }
         return itemsList;

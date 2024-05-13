@@ -38,9 +38,8 @@ public class ItemController {
         return service.getAllUserItems(id);
     }
 
-    @GetMapping("/search?text={text}")
-    public List<ItemDtoGet> searchItem(@PathVariable String text) {
-        System.out.println(text);
+    @GetMapping("/search")
+    public List<ItemDtoGet> searchItem(@RequestParam String text) {
         return service.searchItem(text);
     }
 }
