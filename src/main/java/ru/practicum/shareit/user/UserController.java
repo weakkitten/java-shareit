@@ -20,7 +20,7 @@ public class UserController {
     private final UserService service;
 
     @PostMapping
-    public UserDto createUser(@Valid @RequestBody UserDto user) {//Скорее всего перенести логику в сервис
+    public UserDto createUser(@Valid @RequestBody UserDto user){//Скорее всего перенести логику в сервис
         log.info("Начало операции по добавлению пользователя - " + user);
         log.info("Проверка email");
         if (!service.checkEmail(user.getEmail())){
