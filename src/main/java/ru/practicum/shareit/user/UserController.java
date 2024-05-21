@@ -23,14 +23,15 @@ public class UserController {
     public UserDto createUser(@Valid @RequestBody UserDto user) {
         log.info("Начало операции по добавлению пользователя - " + user);
         log.info("Проверка email");
-        if (!service.checkEmail(user.getEmail())) {
+        return service.addUser(user);
+/*        if (!service.checkEmail(user.getEmail())) {
             log.info("Такого email нет в списке используемых");
-            return service.addUser(user);
+
         } else {
             throw new BadEmailException("Такой email уже используется");
-        }
+        }*/
     }
-
+/*
     @PatchMapping("/{userId}")//Доработать
     public UserDto updateUser(@PathVariable int userId,@RequestBody UserDtoUpdate user) {
         return service.updateUser(userId, user);
@@ -49,5 +50,5 @@ public class UserController {
     @GetMapping
     public List<User> getAllUsers() {
         return service.getAllUsers();
-    }
+    }*/
 }

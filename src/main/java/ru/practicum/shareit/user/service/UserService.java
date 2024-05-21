@@ -8,27 +8,26 @@ import ru.practicum.shareit.user.dto.UserDtoUpdate;
 import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.InMemoryUserRepository;
+import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
-    private final InMemoryUserRepository userRepository;
+    private final UserRepository userRepository;
 
-    public UserDto getUser(int id) {
+/*    public UserDto getUser(int id) {
         return UserMapper.toUserDto(userRepository.getUser(id));
-    }
+    }*/
 
     public UserDto addUser(UserDto userDto) {
         User user =  UserMapper.toUser(userDto);
-        userRepository.setUserCount(userRepository.getUserCount() + 1);
-        user.setId(userRepository.getUserCount());
-        userRepository.addUser(user.getId(), user);
-        return UserMapper.toUserDto(userRepository.getUser(user.getId()));
+        userRepository.save(user);
+        return UserMapper.toUserDto(userRepository.findById(user.getId()).get());
     }
 
-    public void removeUser(int id) {
+/*    public void removeUser(int id) {
         userRepository.removeUser(id);
     }
 
@@ -57,5 +56,5 @@ public class UserService {
 
     public List<User> getAllUsers() {
         return userRepository.getAllUsers();
-    }
+    }*/
 }
