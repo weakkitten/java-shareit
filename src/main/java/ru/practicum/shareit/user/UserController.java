@@ -24,31 +24,29 @@ public class UserController {
         log.info("Начало операции по добавлению пользователя - " + user);
         log.info("Проверка email");
         return service.addUser(user);
-/*        if (!service.checkEmail(user.getEmail())) {
-            log.info("Такого email нет в списке используемых");
-
-        } else {
-            throw new BadEmailException("Такой email уже используется");
-        }*/
     }
-/*
+
     @PatchMapping("/{userId}")//Доработать
     public UserDto updateUser(@PathVariable int userId,@RequestBody UserDtoUpdate user) {
+        log.info("Начало операции по обновлению пользователя - " + user);
         return service.updateUser(userId, user);
     }
 
     @DeleteMapping("/{userId}")
     public void removeUser(@PathVariable int userId) {
+        log.info("Начало операции по удалению пользователя с id- " + userId);
         service.removeUser(userId);
     }
 
     @GetMapping("/{userId}")
     public UserDto getUserById(@PathVariable int userId) {
+        log.info("Начало операции по поиску пользователя с id - " + userId);
         return service.getUser(userId);
     }
 
     @GetMapping
     public List<User> getAllUsers() {
+        log.info("Начало операции по выгрузке всех пользователей");
         return service.getAllUsers();
-    }*/
+    }
 }

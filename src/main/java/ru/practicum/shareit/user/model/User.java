@@ -13,7 +13,6 @@ import javax.validation.constraints.*;
 @Table(name = "users", schema = "public")
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     protected int id;
     protected String name;
     @NonNull

@@ -17,9 +17,9 @@ import java.util.List;
 public class UserService {
     private final UserRepository userRepository;
 
-/*    public UserDto getUser(int id) {
-        return UserMapper.toUserDto(userRepository.getUser(id));
-    }*/
+    public UserDto getUser(int id) {
+        return UserMapper.toUserDto(userRepository.findById(id).get());
+    }
 
     public UserDto addUser(UserDto userDto) {
         User user =  UserMapper.toUser(userDto);
@@ -27,34 +27,29 @@ public class UserService {
         return UserMapper.toUserDto(userRepository.findById(user.getId()).get());
     }
 
-/*    public void removeUser(int id) {
-        userRepository.removeUser(id);
+    public void removeUser(int id) {
+        userRepository.deleteById(id);
     }
 
     public UserDto updateUser(int id, UserDtoUpdate userDto) {
-        User user = userRepository.getUser(id);
+        User user = userRepository.findById(id).get();
         if (userDto.getName() != null) {
             user.setName(userDto.getName());
         }
         if (userDto.getEmail() != null) {
             if (!userDto.getEmail().equals(user.getEmail())) {
-                if (!checkEmail(userDto.getEmail())) {
+                if (!userRepository.findByEmailContainingIgnoreCase(userDto.getEmail())) {
                     user.setEmail(userDto.getEmail());
-                    userRepository.addEmail(user.getId(), user.getEmail());
                 } else {
                     throw new BadEmailException("Такой email уже используется");
                 }
             }
         }
-        userRepository.updateUser(id, user);
-        return UserMapper.toUserDto(userRepository.getUser(id));
-    }
-
-    public boolean checkEmail(String email) {
-        return userRepository.checkEmail(email);
+        userRepository.save(user);
+        return UserMapper.toUserDto(userRepository.findById(id).get());
     }
 
     public List<User> getAllUsers() {
-        return userRepository.getAllUsers();
-    }*/
+        return userRepository.findAll();
+    }
 }
