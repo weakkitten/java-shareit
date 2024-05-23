@@ -8,7 +8,9 @@ import ru.practicum.shareit.item.dto.ItemDtoGet;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.InMemoryItemRepository;
+import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.repository.InMemoryUserRepository;
+import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,21 +18,20 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class ItemService {
-    private final InMemoryItemRepository itemRepository;
-    private final InMemoryUserRepository userRepository;
+    private final ItemRepository itemRepository;
+    private final UserRepository userRepository;
 
     public ItemDtoGet createItem(int userId, ItemDto itemDto) {
-        if (userRepository.getUser(userId) == null) {
+        Item item = ItemMapper.toItem(userId, itemDto);
+        if (userRepository.findById(userId).isEmpty()) {
             throw new NotFoundException("Нет такого пользователя");
         }
-        itemRepository.setItemCount(itemRepository.getItemCount() + 1);
-        itemDto.setId(itemRepository.getItemCount());
-        itemRepository.createItem(itemRepository.getItemCount(), ItemMapper.toItem(userId, itemDto));
-        return ItemMapper.toItemDtoGet(itemRepository.getItem(itemRepository.getItemCount()));
+        itemRepository.save(item);
+        return ItemMapper.toItemDtoGet(itemRepository.findByNameAndOwner(item.getName(), item.getOwner()));
     }
 
     public ItemDtoGet updateItem(int itemId, int userId, ItemDto itemDto) {
-        Item itemRep = itemRepository.getItem(itemId);
+        Item itemRep = itemRepository.findById(itemId).get();
 
         if (itemRep.getOwner() != userId) {
             throw new NotFoundException("Этот пользователь не имеет прав для редактирования");
@@ -44,15 +45,15 @@ public class ItemService {
         if (itemDto.getAvailable() != null) {
             itemRep.setAvailable(itemDto.getAvailable());
         }
-        itemRepository.updateItem(itemId, itemRep);
-        return ItemMapper.toItemDtoGet(itemRepository.getItem(itemId));
+        itemRepository.save(itemRep);
+        return ItemMapper.toItemDtoGet(itemRepository.findById(itemId).get());
     }
 
     public ItemDtoGet getItem(int itemId) {
-        return ItemMapper.toItemDtoGet(itemRepository.getItem(itemId));
+        return ItemMapper.toItemDtoGet(itemRepository.findById(itemId).get());
     }
 
-    public List<ItemDtoGet> getAllUserItems(int userId) {
+/*    public List<ItemDtoGet> getAllUserItems(int userId) {
         List<Item> allItems = itemRepository.returnItemList();
         List<ItemDtoGet> userList = new ArrayList<>();
         for (Item item : allItems) {
@@ -76,5 +77,5 @@ public class ItemService {
             }
         }
         return itemsList;
-    }
+    }*/
 }
