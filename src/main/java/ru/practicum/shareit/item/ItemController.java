@@ -30,7 +30,7 @@ public class ItemController {
         return service.getItem(itemId);
     }
 
-/*    @GetMapping
+    @GetMapping
     public List<ItemDtoGet> getAllItemByUser(@RequestHeader("X-Sharer-User-Id") int id) {
         return service.getAllUserItems(id);
     }
@@ -38,5 +38,5 @@ public class ItemController {
     @GetMapping("/search")
     public List<ItemDtoGet> searchItem(@RequestParam String text) {
         return service.searchItem(text);
-    }*/
+    }
 }

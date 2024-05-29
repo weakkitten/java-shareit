@@ -2,6 +2,7 @@ package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.error.exception.BadRequestException;
 import ru.practicum.shareit.error.exception.NotFoundException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemDtoGet;
@@ -50,32 +51,28 @@ public class ItemService {
     }
 
     public ItemDtoGet getItem(int itemId) {
+        System.out.println("Пустой или нет - " + itemRepository.findById(itemId));
+        if (itemRepository.findById(itemId).isEmpty()) {
+            throw new NotFoundException("Нет предмета с таким id");
+        }
         return ItemMapper.toItemDtoGet(itemRepository.findById(itemId).get());
     }
 
-/*    public List<ItemDtoGet> getAllUserItems(int userId) {
-        List<Item> allItems = itemRepository.returnItemList();
-        List<ItemDtoGet> userList = new ArrayList<>();
-        for (Item item : allItems) {
-            if (item.getOwner() == userId) {
-                userList.add(ItemMapper.toItemDtoGet(item));
-            }
+    public List<ItemDtoGet> getAllUserItems(int userId) {
+        List<ItemDtoGet> itemDtoList = new ArrayList<>();
+        for (Item item : itemRepository.findByOwner(userId)) {
+            itemDtoList.add(ItemMapper.toItemDtoGet(item));
         }
-        return userList;
+        return itemDtoList;
     }
 
     public List<ItemDtoGet> searchItem(String text) {
-        List<ItemDtoGet> itemsList = new ArrayList<>();
+        List<ItemDtoGet> itemDtoList = new ArrayList<>();
         if (!text.isBlank()) {
-            List<Item> allItems = itemRepository.returnItemList();
-            for (Item item : allItems) {
-                if ((item.getName().toLowerCase().contains(text.toLowerCase())
-                        || item.getDescription().toLowerCase().contains(text.toLowerCase())) &&  item.isAvailable()) {
-                    System.out.println("Попал сюда");
-                    itemsList.add(ItemMapper.toItemDtoGet(item));
-                }
+            for (Item item : itemRepository.search(text)) {
+                itemDtoList.add(ItemMapper.toItemDtoGet(item));
             }
         }
-        return itemsList;
-    }*/
+        return itemDtoList;
+    }
 }
