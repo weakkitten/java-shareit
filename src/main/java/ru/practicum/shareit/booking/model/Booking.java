@@ -27,8 +27,9 @@ public class Booking {
     private LocalDateTime start;
     @Column(name = "END_DATE")
     private LocalDateTime end;
-    private int item_id;
-    private int booker_id;
+    private int itemId;
+    @Column(name = "BOOKER_ID")
+    private int bookerId;
     @Enumerated(EnumType.STRING)
     private Status status;
 }

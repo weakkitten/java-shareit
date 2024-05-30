@@ -31,6 +31,13 @@ public class ErrorHandler {
         return new ErrorResponse("Такая почта уже используется", e.getMessage());
     }
 
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ErrorResponse handleTimeException(final BadEmailException e) {
+        log.debug("Время в аренде некорректно");
+        return new ErrorResponse("Время некорректно", e.getMessage());
+    }
+
 /*    @ExceptionHandler//Перекрывает handleBadEmailException
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleBadEmailException(final RuntimeException e) {

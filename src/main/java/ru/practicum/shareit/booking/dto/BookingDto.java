@@ -4,13 +4,16 @@ import lombok.Builder;
 import lombok.Data;
 import ru.practicum.shareit.utility.Status;
 
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.*;
+import java.time.LocalDateTime;
 
 @Data
 @Builder
 public class BookingDto {
-    private int id;
-    private int item_id;
-    private int booker_id;
-    private Status status;
+    private int itemId;
+    @NotNull
+    private LocalDateTime start;
+    @Future
+    @NotNull
+    private LocalDateTime end;
 }
