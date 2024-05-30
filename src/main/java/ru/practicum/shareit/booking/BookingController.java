@@ -20,7 +20,7 @@ public class BookingController {
     @PostMapping
     public BookingDto createBooking(@RequestHeader("X-Sharer-User-Id") int userId,
                                     @RequestBody @Valid BookingDto bookingDto) {
-        return null;
+        return service.createBooking(bookingDto, userId);
     }
 
     @PatchMapping("/{bookingId}")
