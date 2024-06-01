@@ -2,6 +2,10 @@ package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.booking.repository.BookingRepository;
+import ru.practicum.shareit.comments.model.Comment;
+import ru.practicum.shareit.comments.repository.CommentRepository;
 import ru.practicum.shareit.error.exception.BadRequestException;
 import ru.practicum.shareit.error.exception.NotFoundException;
 import ru.practicum.shareit.item.dto.ItemDto;
@@ -21,6 +25,8 @@ import java.util.List;
 public class ItemService {
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
+    private final CommentRepository commentRepository;
+    private final BookingRepository bookingRepository;
 
     public ItemDtoGet createItem(int userId, ItemDto itemDto) {
         Item item = ItemMapper.toItem(userId, itemDto);
@@ -74,5 +80,24 @@ public class ItemService {
             }
         }
         return itemDtoList;
+    }
+
+    public Comment createComment(int userId, int itemId, Comment comment) {
+        Booking booking = bookingRepository.findByBookerIdAndItemId(userId, itemId);
+
+        if (booking == null) {
+            throw new BadRequestException("Отказано в доступе: пользователь с таким id" +
+                                          " не брал вещь в аренду");
+        }
+        commentRepository.save(comment);
+        return commentRepository.findById(comment.getId()).get();
+    }
+
+    public List<Comment> getCommentByItem(int itemId) {
+        return commentRepository.findByItem_Id(itemId);
+    }
+
+    public List<Comment> getAllCommentOnUsersItems(int userId) {
+        return commentRepository.findByOwner_Id(userId);
     }
 }

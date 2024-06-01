@@ -25,24 +25,25 @@ public class BookingController {
     }
 
     @PatchMapping("/{bookingId}")
-    public BookingDto approvedBooking(@RequestHeader("X-Sharer-User-Id") int userId,
-                                      @PathVariable int bookingId, @RequestParam Status approved) {
-        return null;
+    public Booking updateBooking(@RequestHeader("X-Sharer-User-Id") int userId,
+                                      @PathVariable int bookingId, @RequestParam Status status) {
+        return service.updateBooking(userId, bookingId, status);
     }
 
     @GetMapping("/{bookingId}")
-    public BookingDto getBooking(@RequestHeader("X-Sharer-User-Id") int userId, @PathVariable int bookingId) {
-        return null;
+    public Booking getBooking(@RequestHeader("X-Sharer-User-Id") int userId, @PathVariable int bookingId) {
+        return service.getBooking(userId, bookingId);
     }
 
     @GetMapping
-    public List<BookingDto> getAllUserBooking(@RequestHeader("X-Sharer-User-Id") int userId,
-                                              @RequestParam Status approved) {
-        return null;
+    public List<Booking> getAllUserBooking(@RequestHeader("X-Sharer-User-Id") int bookerId,
+                                              @RequestParam Status status) {
+        return service.getAllUserBooking(bookerId, status);
     }
 
     @GetMapping("/{owner}")
-    public List<BookingDto> getAllOwnerBooking(@PathVariable int bookingId, @RequestParam Status approved) {
-        return null;
+    public List<Booking> getAllOwnerBooking(@RequestHeader("X-Sharer-User-Id") int userId,
+                                               @PathVariable int bookingId, @RequestParam Status status) {
+        return service.getAllOwnerBooking(userId, bookingId, status);
     }
 }

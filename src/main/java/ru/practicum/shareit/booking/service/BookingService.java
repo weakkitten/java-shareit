@@ -9,9 +9,12 @@ import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.error.exception.BadRequestException;
 import ru.practicum.shareit.error.exception.NotFoundException;
 import ru.practicum.shareit.error.exception.TimeException;
+import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.repository.UserRepository;
 import ru.practicum.shareit.utility.Status;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -22,8 +25,12 @@ public class BookingService {
 
     public Booking createBooking(BookingDto dto, int bookerId) {
         Booking booking = BookingMapper.bookingDtoToBooking(dto, bookerId, Status.WAITING);
+
         if (booking.getEnd().isBefore(booking.getStart())) {
             throw new TimeException("Конец раньше начала");
+        }
+        if (itemRepository.findById(booking.getItemId()).isEmpty()) {
+            throw new NotFoundException("Неккоректный id предмета");
         }
         if (!itemRepository.findById(booking.getItemId()).get().isAvailable()) {
             throw new BadRequestException("Предмет занят");
@@ -33,5 +40,36 @@ public class BookingService {
         }
         bookingRepository.save(booking);
         return bookingRepository.findById(booking.getId()).get();
+    }
+
+    public Booking updateBooking(int userId, int bookingId, Status status) {
+        Booking booking = bookingRepository.findById(bookingId).get();
+        Item item = itemRepository.findById(booking.getItemId()).get();
+
+        if (item.getOwner() != userId) {
+            throw new BadRequestException("Может подтвердить только владелец вещи");
+        }
+        booking.setStatus(status);
+        bookingRepository.save(booking);
+        return bookingRepository.findById(bookingId).get();
+    }
+
+    public Booking getBooking(int userId, int bookingId) {
+        Booking booking = bookingRepository.findById(bookingId).get();
+        Item item = itemRepository.findById(booking.getItemId()).get();
+
+        if (booking.getBookerId() != userId || item.getOwner() != userId) {
+            throw new BadRequestException("Отказано в доступе");
+        }
+        return bookingRepository.findById(bookingId).get();
+    }
+
+    public List<Booking> getAllUserBooking(int bookerId, Status status) {
+        return bookingRepository.findByBookerIdAndStatus(bookerId, status);
+    }
+
+    public List<Booking> getAllOwnerBooking(int ownerId, int bookingId, Status status) {
+        List<Item> ownerItemList = itemRepository.findByOwner(ownerId);
+        return bookingRepository.findByItemIdAndStatus(ownerItemList, status);
     }
 }

@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@ToString
 @Table(name = "BOOKINGS", schema = "public",
         uniqueConstraints = {
                 @UniqueConstraint(columnNames = "id")

@@ -33,7 +33,7 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponse handleTimeException(final BadEmailException e) {
+    public ErrorResponse handleTimeException(final TimeException e) {
         log.debug("Время в аренде некорректно");
         return new ErrorResponse("Время некорректно", e.getMessage());
     }
