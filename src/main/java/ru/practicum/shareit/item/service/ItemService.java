@@ -94,10 +94,18 @@ public class ItemService {
     }
 
     public List<Comment> getCommentByItem(int itemId) {
-        return commentRepository.findByItem_Id(itemId);
+        return commentRepository.findByItemId(itemId);
     }
 
     public List<Comment> getAllCommentOnUsersItems(int userId) {
-        return commentRepository.findByOwner_Id(userId);
+        List<Item> itemList = itemRepository.findByOwner(userId);
+        List<Comment> commentsList = new ArrayList<>();
+
+        for (Item item : itemList) {
+            if (commentRepository.findByItemId(item.getId()) != null) {
+                commentsList.addAll(commentRepository.findByItemId(item.getId()));
+            }
+        }
+        return commentsList;
     }
 }

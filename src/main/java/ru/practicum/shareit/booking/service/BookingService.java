@@ -14,6 +14,7 @@ import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.repository.UserRepository;
 import ru.practicum.shareit.utility.Status;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -68,8 +69,16 @@ public class BookingService {
         return bookingRepository.findByBookerIdAndStatus(bookerId, status);
     }
 
-    public List<Booking> getAllOwnerBooking(int ownerId, int bookingId, Status status) {
+    public List<BookingDto> getAllOwnerBooking(int ownerId, int bookingId, Status status) {
         List<Item> ownerItemList = itemRepository.findByOwner(ownerId);
-        return bookingRepository.findByItemIdAndStatus(ownerItemList, status);
+        List<BookingDto> bookingDtoList = new ArrayList<>();
+
+        for (Item itemTemp : ownerItemList) {
+            if (bookingRepository.findByItemIdAndStatus(itemTemp.getId(), status) != null) {
+                bookingDtoList.add(BookingMapper.bookingToBookingDto(bookingRepository
+                                  .findByItemIdAndStatus(itemTemp.getId(), status)));
+            }
+        }
+        return bookingDtoList;
     }
 }

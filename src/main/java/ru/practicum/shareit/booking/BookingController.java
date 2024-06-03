@@ -42,7 +42,7 @@ public class BookingController {
     }
 
     @GetMapping("/{owner}")
-    public List<Booking> getAllOwnerBooking(@RequestHeader("X-Sharer-User-Id") int userId,
+    public List<BookingDto> getAllOwnerBooking(@RequestHeader("X-Sharer-User-Id") int userId,
                                                @PathVariable int bookingId, @RequestParam Status status) {
         return service.getAllOwnerBooking(userId, bookingId, status);
     }

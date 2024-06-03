@@ -10,8 +10,8 @@ import java.time.LocalDateTime;
 public class BookingMapper {
     public static Booking bookingDtoToBooking(BookingDto dto, int userId, Status status) {
         return Booking.builder()
-                .start(dto.getStart())
                 .itemId(dto.getItemId())
+                .start(dto.getStart())
                 .end(dto.getEnd())
                 .bookerId(userId)
                 .status(status)
@@ -20,9 +20,12 @@ public class BookingMapper {
 
     public static BookingDto bookingToBookingDto(Booking booking) {
         return BookingDto.builder()
-                .itemId(booking.getItemId())
+                .id(booking.getId())
                 .start(booking.getStart())
                 .end(booking.getEnd())
+                .itemId(booking.getItemId())
+                .bookerId(booking.getBookerId())
+                .status(booking.getStatus())
                 .build();
     }
 }
