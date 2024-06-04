@@ -47,7 +47,7 @@ public class ItemController {
         return service.createComment(userId, itemId, comment);
     }
 
-    @GetMapping("/{itemId}")
+/*    @GetMapping("/{itemId}")
     public List<Comment> getCommentByItem(@PathVariable int itemId) {
         return service.getCommentByItem(itemId);
     }
@@ -55,5 +55,5 @@ public class ItemController {
     @GetMapping
     public List<Comment> getAllCommentOnUsersItems(@RequestHeader("X-Sharer-User-Id") int userId) {
         return service.getAllCommentOnUsersItems(userId);
-    }
+    }*/
 }

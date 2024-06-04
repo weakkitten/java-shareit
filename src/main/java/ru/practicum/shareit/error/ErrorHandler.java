@@ -32,7 +32,7 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.CONFLICT)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleTimeException(final TimeException e) {
         log.debug("Время в аренде некорректно");
         return new ErrorResponse("Время некорректно", e.getMessage());

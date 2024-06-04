@@ -30,6 +30,9 @@ public class BookingService {
         if (booking.getEnd().isBefore(booking.getStart())) {
             throw new TimeException("Конец раньше начала");
         }
+        if (booking.getEnd().equals(booking.getStart())) {
+            throw new TimeException("Время начала и конца равны");
+        }
         if (itemRepository.findById(booking.getItemId()).isEmpty()) {
             throw new NotFoundException("Неккоректный id предмета");
         }
