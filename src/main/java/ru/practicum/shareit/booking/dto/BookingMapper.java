@@ -2,6 +2,7 @@ package ru.practicum.shareit.booking.dto;
 
 import lombok.experimental.UtilityClass;
 import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.item.dto.ItemDtoBooking;
 import ru.practicum.shareit.utility.Status;
 
 import java.time.LocalDateTime;
@@ -25,6 +26,17 @@ public class BookingMapper {
                 .end(booking.getEnd())
                 .itemId(booking.getItemId())
                 .bookerId(booking.getBookerId())
+                .status(booking.getStatus())
+                .build();
+    }
+
+    public static BookingDtoGet bookingToBookingDtoGet(Booking booking, BookerDto bookerDto, ItemDtoBooking itemDtoBooking) {
+        return BookingDtoGet.builder()
+                .id(booking.getId())
+                .start(booking.getStart())
+                .end(booking.getEnd())
+                .booker(bookerDto)
+                .item(itemDtoBooking)
                 .status(booking.getStatus())
                 .build();
     }
