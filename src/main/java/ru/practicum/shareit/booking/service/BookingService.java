@@ -15,6 +15,7 @@ import ru.practicum.shareit.user.repository.UserRepository;
 import ru.practicum.shareit.utility.State;
 import ru.practicum.shareit.utility.Status;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -104,7 +105,7 @@ public class BookingService {
     }
 
     public List<BookingDtoGet> getAllUserBooking(int bookerId, State state) {
-        List<Booking> bookingList;
+        List<Booking> bookingList = null;
         List<BookingDtoGet> bookingDtoList = new ArrayList<>();
 
         if (userRepository.findById(bookerId).isEmpty()) {
@@ -112,10 +113,17 @@ public class BookingService {
         }
         if (state == State.ALL) {
             bookingList = new ArrayList<>(bookingRepository.findByBookerIdOrderByStartDesc(bookerId));
-        } else {
-            bookingList = new ArrayList<>(bookingRepository.findByBookerIdAndStatusOrderByStartDesc(bookerId, status));
+        } else if (state == State.WAITING){
+            bookingList = new ArrayList<>(bookingRepository.findByBookerIdAndStatusOrderByStartDesc(bookerId, Status.WAITING));
+        } else if (state == State.REJECTED) {
+            bookingList = new ArrayList<>(bookingRepository.findByBookerIdAndStatusOrderByStartDesc(bookerId, Status.REJECTED));
+        } else if (state == State.FUTURE) {
+            bookingList = new ArrayList<>(bookingRepository.future(bookerId, LocalDateTime.now()));
+        } else if (state == State.PAST) {
+            bookingList = new ArrayList<>(bookingRepository.paste(bookerId, LocalDateTime.now()));
+        } else if (state == State.CURRENT) {
+            bookingList = new ArrayList<>(bookingRepository.current(bookerId, LocalDateTime.now()));
         }
-        System.out.println("Список - " + bookingList);
         for (Booking booking : bookingList) {
             BookerDto bookerDto = BookerDto.builder()
                     .id(booking.getBookerId())
