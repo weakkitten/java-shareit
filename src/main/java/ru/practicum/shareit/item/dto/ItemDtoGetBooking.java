@@ -4,7 +4,6 @@ import lombok.Builder;
 import lombok.Data;
 import ru.practicum.shareit.booking.dto.BookingDtoItem;
 import ru.practicum.shareit.comments.dto.CommentGet;
-import ru.practicum.shareit.comments.model.Comment;
 
 import java.util.List;
 

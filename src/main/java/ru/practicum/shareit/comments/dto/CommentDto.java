@@ -2,9 +2,7 @@ package ru.practicum.shareit.comments.dto;
 
 import lombok.*;
 
-import javax.persistence.Column;
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Getter

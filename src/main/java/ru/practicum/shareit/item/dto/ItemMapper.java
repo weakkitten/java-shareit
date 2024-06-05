@@ -3,7 +3,6 @@ package ru.practicum.shareit.item.dto;
 import lombok.experimental.UtilityClass;
 import ru.practicum.shareit.booking.dto.BookingDtoItem;
 import ru.practicum.shareit.comments.dto.CommentGet;
-import ru.practicum.shareit.comments.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 
 import java.util.List;
@@ -28,6 +27,7 @@ public class ItemMapper {
                 .owner(id)
                 .build();
     }
+
     public static ItemDtoGetBooking itemDtoGetBooking(Item item, BookingDtoItem last, BookingDtoItem next,
                                                       List<CommentGet> commentList) {
         return ItemDtoGetBooking.builder()

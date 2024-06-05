@@ -119,7 +119,7 @@ public class BookingService {
         }
         if (State.valueOf(state) == State.ALL) {
             bookingList = new ArrayList<>(bookingRepository.findByBookerIdOrderByStartDesc(bookerId));
-        } else if (State.valueOf(state) == State.WAITING){
+        } else if (State.valueOf(state) == State.WAITING) {
             bookingList = new ArrayList<>(bookingRepository.findByBookerIdAndStatusOrderByStartDesc(bookerId, Status.WAITING));
         } else if (State.valueOf(state) == State.REJECTED) {
             bookingList = new ArrayList<>(bookingRepository.findByBookerIdAndStatusOrderByStartDesc(bookerId, Status.REJECTED));
@@ -167,7 +167,7 @@ public class BookingService {
 
             if (State.valueOf(state) == State.ALL) {
                 bookingList = new ArrayList<>(bookingRepository.findByItemIdOrderByStartDesc(itemId));
-            } else if (State.valueOf(state) == State.WAITING){
+            } else if (State.valueOf(state) == State.WAITING) {
                 bookingList = new ArrayList<>(bookingRepository.findByItemIdAndStatusOrderByStartDesc(itemId, Status.WAITING));
             } else if (State.valueOf(state) == State.REJECTED) {
                 bookingList = new ArrayList<>(bookingRepository.findByItemIdAndStatusOrderByStartDesc(itemId, Status.REJECTED));
