@@ -13,6 +13,7 @@ public class CommentMapper {
                 .created(LocalDateTime.now())
                 .build();
     }
+    
     public static CommentGet toCommentGet(Comment comment, String name) {
         return CommentGet.builder()
                 .id(comment.getId())
