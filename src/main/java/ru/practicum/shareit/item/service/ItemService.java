@@ -6,9 +6,13 @@ import ru.practicum.shareit.booking.dto.BookingDtoItem;
 import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.repository.BookingRepository;
+import ru.practicum.shareit.comments.dto.CommentDto;
+import ru.practicum.shareit.comments.dto.CommentGet;
+import ru.practicum.shareit.comments.dto.CommentMapper;
 import ru.practicum.shareit.comments.model.Comment;
 import ru.practicum.shareit.comments.repository.CommentRepository;
 import ru.practicum.shareit.error.exception.BadRequestException;
+import ru.practicum.shareit.error.exception.CommentTextIsEmpty;
 import ru.practicum.shareit.error.exception.NotFoundException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemDtoGet;
@@ -66,9 +70,17 @@ public class ItemService {
         Item item = itemRepository.findById(itemId).get();
         BookingDtoItem lastBooking = null;
         BookingDtoItem nextBooking = null;
+        List<Comment> commentList = commentRepository.findByItemId(itemId);
+        List<CommentGet> commentGetList = new ArrayList<>();
+        for (Comment comment : commentList) {
+            commentGetList.add(CommentMapper.toCommentGet(comment,
+                    userRepository.findById(comment.getAuthorId()).get().getName()));
+        }
+        System.out.println("Как работает - " + userId);
+        System.out.println(bookingRepository.nextBooking(itemId, Status.APPROVED, LocalDateTime.now()));
 
         if (item.getOwner() != userId) {
-            return ItemMapper.itemDtoGetBooking(item, lastBooking, nextBooking);
+            return ItemMapper.itemDtoGetBooking(item, lastBooking, nextBooking, commentGetList);
         }
         if (!bookingRepository.lastBooking(itemId, Status.APPROVED, LocalDateTime.now()).isEmpty()) {
             lastBooking = BookingMapper.toBookingDtoItem(bookingRepository.lastBooking(itemId,
@@ -78,7 +90,9 @@ public class ItemService {
             nextBooking = BookingMapper.toBookingDtoItem(bookingRepository.nextBooking(itemId,
                                                          Status.APPROVED, LocalDateTime.now()).get(0));
         }
-        return ItemMapper.itemDtoGetBooking(item, lastBooking, nextBooking);
+        System.out.println(lastBooking);
+        System.out.println(nextBooking);
+        return ItemMapper.itemDtoGetBooking(item, lastBooking, nextBooking, commentGetList);
     }
 
     public List<ItemDtoGetBooking> getAllUserItems(int userId) {
@@ -87,6 +101,12 @@ public class ItemService {
         for (Item item : itemRepository.findByOwner(userId)) {
             BookingDtoItem lastBooking = null;
             BookingDtoItem nextBooking = null;
+            List<Comment> commentList = commentRepository.findByItemId(item.getId());
+            List<CommentGet> commentGetList = new ArrayList<>();
+            for (Comment comment : commentList) {
+                commentGetList.add(CommentMapper.toCommentGet(comment,
+                        userRepository.findById(comment.getAuthorId()).get().getName()));
+            }
             if (!bookingRepository.lastBooking(item.getId(), Status.APPROVED, LocalDateTime.now()).isEmpty()) {
                 lastBooking = BookingMapper.toBookingDtoItem(bookingRepository.lastBooking(item.getId(),
                         Status.APPROVED, LocalDateTime.now()).get(0));
@@ -95,7 +115,7 @@ public class ItemService {
                 nextBooking = BookingMapper.toBookingDtoItem(bookingRepository.nextBooking(item.getId(),
                         Status.APPROVED, LocalDateTime.now()).get(0));
             }
-            itemDtoList.add(ItemMapper.itemDtoGetBooking(item, lastBooking, nextBooking));
+            itemDtoList.add(ItemMapper.itemDtoGetBooking(item, lastBooking, nextBooking, commentGetList));
         }
         return itemDtoList;
     }
@@ -110,30 +130,19 @@ public class ItemService {
         return itemDtoList;
     }
 
-    public Comment createComment(int userId, int itemId, Comment comment) {
-        Booking booking = bookingRepository.findByBookerIdAndItemId(userId, itemId);
+    public CommentGet createComment(int userId, int itemId, CommentDto comment) {
+        List<Booking> booking = bookingRepository.findByBookerIdAndItemIdAndStatusAndEndLessThan(userId, itemId,
+                                                                          Status.APPROVED, LocalDateTime.now());
 
-        if (booking == null) {
+        if (booking.isEmpty()) {
             throw new BadRequestException("Отказано в доступе: пользователь с таким id" +
                                           " не брал вещь в аренду");
         }
-        commentRepository.save(comment);
-        return commentRepository.findById(comment.getId()).get();
-    }
-
-    public List<Comment> getCommentByItem(int itemId) {
-        return commentRepository.findByItemId(itemId);
-    }
-
-    public List<Comment> getAllCommentOnUsersItems(int userId) {
-        List<Item> itemList = itemRepository.findByOwner(userId);
-        List<Comment> commentsList = new ArrayList<>();
-
-        for (Item item : itemList) {
-            if (commentRepository.findByItemId(item.getId()) != null) {
-                commentsList.addAll(commentRepository.findByItemId(item.getId()));
-            }
+        if (comment.getText().isEmpty()) {
+            throw new CommentTextIsEmpty("Текст отсутствует");
         }
-        return commentsList;
+        commentRepository.save(CommentMapper.toComment(comment, userId, itemId));
+        return CommentMapper.toCommentGet(commentRepository.findByItemIdAndAuthorIdAndText(itemId, userId, comment.getText()),
+                userRepository.findById(userId).get().getName());
     }
 }

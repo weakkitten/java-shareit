@@ -15,7 +15,8 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
     public List<Booking> findByItemIdAndStatusOrderByStartDesc(int itemId, Status status);
     public List<Booking> findByItemIdOrderByStartDesc(int itemId);
     public List<Booking> findByBookerIdOrderByStartDesc(int bookerId);
-    public Booking findByBookerIdAndItemId(int bookerId, int itemId);
+    public List<Booking> findByBookerIdAndItemIdAndStatusAndEndLessThan(int bookerId, int itemId, Status status,
+                                                                        LocalDateTime time);
     @Query("select b from Booking b " +
             "where b.bookerId = ?1" +
             " and (b.status = ?3" +
@@ -27,15 +28,16 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
             "where b.bookerId = ?1" +
             " and b.status = ?3" +
             " and b.end < ?2" +
-            "order by b.start desc")
+            " order by b.start desc")
     public List<Booking> paste(int bookerId, LocalDateTime now, Status status);
     @Query("select b from Booking b " +
             "where b.bookerId = ?1" +
-            " and b.status = ?3" +
+            " and (b.status = ?3" +
+            " or b.status = ?4)" +
             " and b.start <= ?2" +
             " and b.end > ?2" +
             " order by b.start desc")
-    public List<Booking> current(int bookerId, LocalDateTime now, Status status);
+    public List<Booking> current(int bookerId, LocalDateTime now, Status status, Status rej);
     @Query("select b from Booking b " +
             "where b.itemId = ?1" +
             " and (b.status = ?3" +
@@ -47,15 +49,16 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
             "where b.itemId = ?1" +
             " and b.status = ?3" +
             " and b.end < ?2" +
-            "order by b.start desc")
+            " order by b.start desc")
     public List<Booking> pasteItemId(int itemId, LocalDateTime now, Status status);
     @Query("select b from Booking b " +
             "where b.itemId = ?1" +
-            " and b.status = ?3" +
+            " and (b.status = ?3" +
+            " or b.status = ?4)" +
             " and b.start <= ?2" +
             " and b.end > ?2" +
             " order by b.start desc")
-    public List<Booking> currentItemId(int itemId, LocalDateTime now, Status status);
+    public List<Booking> currentItemId(int itemId, LocalDateTime now, Status status, Status rej);
     @Query("select b from Booking b " +
             "where b.itemId = ?1" +
             " and b.status = ?2" +

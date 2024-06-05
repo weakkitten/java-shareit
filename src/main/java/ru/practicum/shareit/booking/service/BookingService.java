@@ -129,7 +129,8 @@ public class BookingService {
         } else if (State.valueOf(state) == State.PAST) {
             bookingList = new ArrayList<>(bookingRepository.paste(bookerId, LocalDateTime.now(), Status.APPROVED));
         } else if (State.valueOf(state) == State.CURRENT) {
-            bookingList = new ArrayList<>(bookingRepository.current(bookerId, LocalDateTime.now(), Status.APPROVED));
+            bookingList = new ArrayList<>(bookingRepository.current(bookerId, LocalDateTime.now(),
+                                          Status.APPROVED, Status.REJECTED));
         }
         for (Booking booking : bookingList) {
             BookerDto bookerDto = BookerDto.builder()
@@ -176,7 +177,8 @@ public class BookingService {
             } else if (State.valueOf(state) == State.PAST) {
                 bookingList = new ArrayList<>(bookingRepository.pasteItemId(itemId, LocalDateTime.now(), Status.APPROVED));
             } else if (State.valueOf(state) == State.CURRENT) {
-                bookingList = new ArrayList<>(bookingRepository.currentItemId(itemId, LocalDateTime.now(), Status.APPROVED));
+                bookingList = new ArrayList<>(bookingRepository.currentItemId(itemId, LocalDateTime.now(),
+                                              Status.APPROVED, Status.REJECTED));
             }
             for (Booking booking : bookingList) {
                 BookerDto bookerDto = BookerDto.builder()

@@ -52,6 +52,13 @@ public class ErrorHandler {
         return new ErrorResponse("Отказано в доступе", e.getMessage());
     }
 
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleCommentTextIsEmpty(final CommentTextIsEmpty e) {
+        log.debug("Запрос отклонен");
+        return new ErrorResponse("Некорректный текст", e.getMessage());
+    }
+
 /*    @ExceptionHandler//Перекрывает handleBadEmailException
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleBadEmailException(final RuntimeException e) {
