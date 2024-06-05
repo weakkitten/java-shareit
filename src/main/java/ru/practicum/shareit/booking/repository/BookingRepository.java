@@ -73,7 +73,8 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
     @Query("select b from Booking b " +
             "where b.itemId = ?1" +
             " and b.status = ?2" +
-            " and b.end < ?3" +
+            " and (b.end < ?3" +
+            " or (b.start < ?3 and b.end > ?3))" +
             " order by b.start desc")
     public List<Booking> lastBooking(int itemId, Status status, LocalDateTime time);
 
