@@ -1,61 +1,56 @@
 package ru.practicum.shareit.user.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.error.exception.BadEmailException;
+import ru.practicum.shareit.error.exception.NotFoundException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserDtoUpdate;
 import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.InMemoryUserRepository;
+import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserService {
-    private final InMemoryUserRepository userRepository;
+    private final UserRepository userRepository;
 
     public UserDto getUser(int id) {
-        return UserMapper.toUserDto(userRepository.getUser(id));
+        if (userRepository.findById(id).isEmpty()) {
+            throw new NotFoundException("Пользователь не найден");
+        }
+        return UserMapper.toUserDto(userRepository.findById(id).get());
     }
 
     public UserDto addUser(UserDto userDto) {
         User user =  UserMapper.toUser(userDto);
-        userRepository.setUserCount(userRepository.getUserCount() + 1);
-        user.setId(userRepository.getUserCount());
-        userRepository.addUser(user.getId(), user);
-        return UserMapper.toUserDto(userRepository.getUser(user.getId()));
+        userRepository.save(user);
+        log.info("Пользователь с id: " + userRepository.findById(user.getId()).get().getId() + " успешно создан");
+        return UserMapper.toUserDto(userRepository.findById(user.getId()).get());
     }
 
     public void removeUser(int id) {
-        userRepository.removeUser(id);
+        userRepository.deleteById(id);
     }
 
     public UserDto updateUser(int id, UserDtoUpdate userDto) {
-        User user = userRepository.getUser(id);
+        User user = userRepository.findById(id).get();
         if (userDto.getName() != null) {
             user.setName(userDto.getName());
         }
         if (userDto.getEmail() != null) {
-            if (!userDto.getEmail().equals(user.getEmail())) {
-                if (!checkEmail(userDto.getEmail())) {
-                    user.setEmail(userDto.getEmail());
-                    userRepository.addEmail(user.getId(), user.getEmail());
-                } else {
-                    throw new BadEmailException("Такой email уже используется");
-                }
-            }
+            user.setEmail(userDto.getEmail());
         }
-        userRepository.updateUser(id, user);
-        return UserMapper.toUserDto(userRepository.getUser(id));
-    }
-
-    public boolean checkEmail(String email) {
-        return userRepository.checkEmail(email);
+        userRepository.save(user);
+        return UserMapper.toUserDto(userRepository.findById(id).get());
     }
 
     public List<User> getAllUsers() {
-        return userRepository.getAllUsers();
+        return userRepository.findAll();
     }
 }

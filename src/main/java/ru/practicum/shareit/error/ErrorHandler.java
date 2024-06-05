@@ -31,6 +31,34 @@ public class ErrorHandler {
         return new ErrorResponse("Такая почта уже используется", e.getMessage());
     }
 
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleTimeException(final TimeException e) {
+        log.debug("Время в аренде некорректно");
+        return new ErrorResponse("Время некорректно", e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleUnsupportedState(final UnsupportedState e) {
+        log.debug("State некорректен");
+        return new ErrorResponse("Unknown state: UNSUPPORTED_STATUS", e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleBookingReject(final BookingReject e) {
+        log.debug("Запрос отклонен");
+        return new ErrorResponse("Отказано в доступе", e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleCommentTextIsEmpty(final CommentTextIsEmpty e) {
+        log.debug("Запрос отклонен");
+        return new ErrorResponse("Некорректный текст", e.getMessage());
+    }
+
 /*    @ExceptionHandler//Перекрывает handleBadEmailException
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleBadEmailException(final RuntimeException e) {
