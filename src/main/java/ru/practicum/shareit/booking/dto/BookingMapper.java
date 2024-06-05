@@ -38,4 +38,10 @@ public class BookingMapper {
                 .status(booking.getStatus())
                 .build();
     }
+    public static BookingDtoItem toBookingDtoItem(Booking  booking) {
+        return BookingDtoItem.builder()
+                .id(booking.getId())
+                .bookerId(booking.getBookerId())
+                .build();
+    }
 }

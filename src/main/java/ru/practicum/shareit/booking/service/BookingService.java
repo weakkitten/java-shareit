@@ -5,9 +5,7 @@ import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.*;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.repository.BookingRepository;
-import ru.practicum.shareit.error.exception.BadRequestException;
-import ru.practicum.shareit.error.exception.NotFoundException;
-import ru.practicum.shareit.error.exception.TimeException;
+import ru.practicum.shareit.error.exception.*;
 import ru.practicum.shareit.item.dto.ItemDtoBooking;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
@@ -44,6 +42,9 @@ public class BookingService {
         if (userRepository.findById(bookerId).isEmpty()) {
             throw new NotFoundException("Не существует пользователя с таким id");
         }
+        if (itemRepository.findById(booking.getItemId()).get().getOwner() == bookerId) {
+            throw new BookingReject("Нельзя взять в аренду у самого себя");
+        }
         bookingRepository.save(booking);
         BookerDto bookerDto = BookerDto.builder()
                                        .id(bookerId)
@@ -61,7 +62,10 @@ public class BookingService {
         Item item = itemRepository.findById(booking.getItemId()).get();
 
         if (item.getOwner() != userId) {
-            throw new BadRequestException("Может подтвердить только владелец вещи");
+            throw new BookingReject("Может подтвердить только владелец вещи");
+        }
+        if (booking.getStatus() == Status.APPROVED && status) {
+            throw new BadRequestException("Некорректное действие");
         }
         if (status) {
             booking.setStatus(Status.APPROVED);
@@ -81,17 +85,14 @@ public class BookingService {
     }
 
     public BookingDtoGet getBooking(int userId, int bookingId) {
+        if (bookingRepository.findById(bookingId).isEmpty()) {
+            throw new NotFoundException("Объект не найден");
+        }
         Booking booking = bookingRepository.findById(bookingId).get();
         Item item = itemRepository.findById(booking.getItemId()).get();
-        System.out.println("Пользователь - " + userId);
-        System.out.println("Букер - " + booking.getBookerId());
-        System.out.println("Хозяин вещи - " + item.getOwner());
-        System.out.println(booking.getBookerId() != userId);
-        System.out.println(item.getOwner() != userId);
-        System.out.println(booking.getBookerId() != userId || item.getOwner() != userId);
 
         if ((booking.getBookerId() != userId) && (item.getOwner() != userId)) {
-            throw new BadRequestException("Отказано в доступе");
+            throw new BookingReject("Отказано в доступе");
         }
         BookerDto bookerDto = BookerDto.builder()
                 .id(booking.getBookerId())
@@ -104,25 +105,31 @@ public class BookingService {
                 bookerDto, itemDtoBooking);
     }
 
-    public List<BookingDtoGet> getAllUserBooking(int bookerId, State state) {
+    public List<BookingDtoGet> getAllUserBooking(int bookerId, String state) {
         List<Booking> bookingList = null;
         List<BookingDtoGet> bookingDtoList = new ArrayList<>();
 
         if (userRepository.findById(bookerId).isEmpty()) {
             throw new NotFoundException("Не существует пользователя с таким id");
         }
-        if (state == State.ALL) {
+        try {
+            State.valueOf(state);
+        } catch (IllegalArgumentException e) {
+            throw new UnsupportedState("Unknown state: UNSUPPORTED_STATUS");
+        }
+        if (State.valueOf(state) == State.ALL) {
             bookingList = new ArrayList<>(bookingRepository.findByBookerIdOrderByStartDesc(bookerId));
-        } else if (state == State.WAITING){
+        } else if (State.valueOf(state) == State.WAITING){
             bookingList = new ArrayList<>(bookingRepository.findByBookerIdAndStatusOrderByStartDesc(bookerId, Status.WAITING));
-        } else if (state == State.REJECTED) {
+        } else if (State.valueOf(state) == State.REJECTED) {
             bookingList = new ArrayList<>(bookingRepository.findByBookerIdAndStatusOrderByStartDesc(bookerId, Status.REJECTED));
-        } else if (state == State.FUTURE) {
-            bookingList = new ArrayList<>(bookingRepository.future(bookerId, LocalDateTime.now()));
-        } else if (state == State.PAST) {
-            bookingList = new ArrayList<>(bookingRepository.paste(bookerId, LocalDateTime.now()));
-        } else if (state == State.CURRENT) {
-            bookingList = new ArrayList<>(bookingRepository.current(bookerId, LocalDateTime.now()));
+        } else if (State.valueOf(state) == State.FUTURE) {
+            bookingList = new ArrayList<>(bookingRepository.future(bookerId, LocalDateTime.now(), Status.APPROVED,
+                                          Status.WAITING));
+        } else if (State.valueOf(state) == State.PAST) {
+            bookingList = new ArrayList<>(bookingRepository.paste(bookerId, LocalDateTime.now(), Status.APPROVED));
+        } else if (State.valueOf(state) == State.CURRENT) {
+            bookingList = new ArrayList<>(bookingRepository.current(bookerId, LocalDateTime.now(), Status.APPROVED));
         }
         for (Booking booking : bookingList) {
             BookerDto bookerDto = BookerDto.builder()
@@ -137,18 +144,49 @@ public class BookingService {
         return bookingDtoList;
     }
 
-    public List<BookingDto> getAllOwnerBooking(int ownerId, int bookingId, State state) {
+    public List<BookingDtoGet> getAllOwnerBooking(int ownerId, String state) {
         List<Item> ownerItemList = itemRepository.findByOwner(ownerId);
-        List<BookingDto> bookingDtoList = new ArrayList<>();
-        Status status = null;
+        List<BookingDtoGet> bookingDtoList = new ArrayList<>();
 
+        if (ownerItemList == null) {
+            return bookingDtoList;
+        }
+        try {
+            State.valueOf(state);
+        } catch (IllegalArgumentException e) {
+            throw new UnsupportedState("Unknown state: UNSUPPORTED_STATUS");
+        }
         if (userRepository.findById(ownerId).isEmpty()) {
             throw new NotFoundException("Не существует пользователя с таким id");
         }
+
         for (Item itemTemp : ownerItemList) {
-            if (bookingRepository.findByItemIdAndStatus(itemTemp.getId(), status) != null) {
-                bookingDtoList.add(BookingMapper.bookingToBookingDto(bookingRepository
-                                  .findByItemIdAndStatus(itemTemp.getId(), status)));
+            List<Booking> bookingList = null;
+            int itemId = itemTemp.getId();
+
+            if (State.valueOf(state) == State.ALL) {
+                bookingList = new ArrayList<>(bookingRepository.findByItemIdOrderByStartDesc(itemId));
+            } else if (State.valueOf(state) == State.WAITING){
+                bookingList = new ArrayList<>(bookingRepository.findByItemIdAndStatusOrderByStartDesc(itemId, Status.WAITING));
+            } else if (State.valueOf(state) == State.REJECTED) {
+                bookingList = new ArrayList<>(bookingRepository.findByItemIdAndStatusOrderByStartDesc(itemId, Status.REJECTED));
+            } else if (State.valueOf(state) == State.FUTURE) {
+                bookingList = new ArrayList<>(bookingRepository.futureItemId(itemId, LocalDateTime.now(), Status.APPROVED,
+                        Status.WAITING));
+            } else if (State.valueOf(state) == State.PAST) {
+                bookingList = new ArrayList<>(bookingRepository.pasteItemId(itemId, LocalDateTime.now(), Status.APPROVED));
+            } else if (State.valueOf(state) == State.CURRENT) {
+                bookingList = new ArrayList<>(bookingRepository.currentItemId(itemId, LocalDateTime.now(), Status.APPROVED));
+            }
+            for (Booking booking : bookingList) {
+                BookerDto bookerDto = BookerDto.builder()
+                        .id(booking.getBookerId())
+                        .build();
+                ItemDtoBooking itemDtoBooking = ItemDtoBooking.builder()
+                        .id(booking.getItemId())
+                        .name(itemRepository.findById(booking.getItemId()).get().getName())
+                        .build();
+                bookingDtoList.add(BookingMapper.bookingToBookingDtoGet(booking, bookerDto, itemDtoBooking));
             }
         }
         return bookingDtoList;

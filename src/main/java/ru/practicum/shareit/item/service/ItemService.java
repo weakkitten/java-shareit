@@ -2,6 +2,8 @@ package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.booking.dto.BookingDtoItem;
+import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.comments.model.Comment;
@@ -10,11 +12,14 @@ import ru.practicum.shareit.error.exception.BadRequestException;
 import ru.practicum.shareit.error.exception.NotFoundException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemDtoGet;
+import ru.practicum.shareit.item.dto.ItemDtoGetBooking;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.repository.UserRepository;
+import ru.practicum.shareit.utility.Status;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,18 +59,43 @@ public class ItemService {
         return ItemMapper.toItemDtoGet(itemRepository.findById(itemId).get());
     }
 
-    public ItemDtoGet getItem(int itemId) {
-        System.out.println("Пустой или нет - " + itemRepository.findById(itemId));
+    public ItemDtoGetBooking getItem(int itemId, int userId) {
         if (itemRepository.findById(itemId).isEmpty()) {
             throw new NotFoundException("Нет предмета с таким id");
         }
-        return ItemMapper.toItemDtoGet(itemRepository.findById(itemId).get());
+        Item item = itemRepository.findById(itemId).get();
+        BookingDtoItem lastBooking = null;
+        BookingDtoItem nextBooking = null;
+
+        if (item.getOwner() != userId) {
+            return ItemMapper.itemDtoGetBooking(item, lastBooking, nextBooking);
+        }
+        if (!bookingRepository.lastBooking(itemId, Status.APPROVED, LocalDateTime.now()).isEmpty()) {
+            lastBooking = BookingMapper.toBookingDtoItem(bookingRepository.lastBooking(itemId,
+                                                         Status.APPROVED, LocalDateTime.now()).get(0));
+        }
+        if (!bookingRepository.nextBooking(itemId, Status.APPROVED, LocalDateTime.now()).isEmpty()) {
+            nextBooking = BookingMapper.toBookingDtoItem(bookingRepository.nextBooking(itemId,
+                                                         Status.APPROVED, LocalDateTime.now()).get(0));
+        }
+        return ItemMapper.itemDtoGetBooking(item, lastBooking, nextBooking);
     }
 
-    public List<ItemDtoGet> getAllUserItems(int userId) {
-        List<ItemDtoGet> itemDtoList = new ArrayList<>();
+    public List<ItemDtoGetBooking> getAllUserItems(int userId) {
+        List<ItemDtoGetBooking> itemDtoList = new ArrayList<>();
+
         for (Item item : itemRepository.findByOwner(userId)) {
-            itemDtoList.add(ItemMapper.toItemDtoGet(item));
+            BookingDtoItem lastBooking = null;
+            BookingDtoItem nextBooking = null;
+            if (!bookingRepository.lastBooking(item.getId(), Status.APPROVED, LocalDateTime.now()).isEmpty()) {
+                lastBooking = BookingMapper.toBookingDtoItem(bookingRepository.lastBooking(item.getId(),
+                        Status.APPROVED, LocalDateTime.now()).get(0));
+            }
+            if (!bookingRepository.nextBooking(item.getId(), Status.APPROVED, LocalDateTime.now()).isEmpty()) {
+                nextBooking = BookingMapper.toBookingDtoItem(bookingRepository.nextBooking(item.getId(),
+                        Status.APPROVED, LocalDateTime.now()).get(0));
+            }
+            itemDtoList.add(ItemMapper.itemDtoGetBooking(item, lastBooking, nextBooking));
         }
         return itemDtoList;
     }

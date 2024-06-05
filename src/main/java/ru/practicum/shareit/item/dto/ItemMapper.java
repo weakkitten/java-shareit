@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item.dto;
 
 import lombok.experimental.UtilityClass;
+import ru.practicum.shareit.booking.dto.BookingDtoItem;
 import ru.practicum.shareit.item.model.Item;
 
 @UtilityClass
@@ -21,6 +22,16 @@ public class ItemMapper {
                 .description(itemDto.getDescription())
                 .available(itemDto.getAvailable())
                 .owner(id)
+                .build();
+    }
+    public static ItemDtoGetBooking itemDtoGetBooking(Item item, BookingDtoItem last, BookingDtoItem next) {
+        return ItemDtoGetBooking.builder()
+                .id(item.getId())
+                .name(item.getName())
+                .description(item.getDescription())
+                .available(item.isAvailable())
+                .lastBooking(last)
+                .nextBooking(next)
                 .build();
     }
 }
