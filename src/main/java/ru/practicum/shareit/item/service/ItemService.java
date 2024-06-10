@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingDtoItem;
@@ -79,8 +80,6 @@ public class ItemService {
             commentGetList.add(CommentMapper.toCommentGet(comment,
                     userRepository.findById(comment.getAuthorId()).get().getName()));
         }
-        System.out.println("Как работает - " + userId);
-        System.out.println(bookingRepository.nextBooking(itemId, Status.APPROVED, LocalDateTime.now()));
 
         if (item.getOwner() != userId) {
             return ItemMapper.itemDtoGetBooking(item, lastBooking, nextBooking, commentGetList);
@@ -93,15 +92,13 @@ public class ItemService {
             nextBooking = BookingMapper.toBookingDtoItem(bookingRepository.nextBooking(itemId,
                                                          Status.APPROVED, LocalDateTime.now()).get(0));
         }
-        System.out.println(lastBooking);
-        System.out.println(nextBooking);
         return ItemMapper.itemDtoGetBooking(item, lastBooking, nextBooking, commentGetList);
     }
 
-    public List<ItemDtoGetBooking> getAllUserItems(int userId) {
+    public List<ItemDtoGetBooking> getAllUserItems(int userId, int from, int size) {
         List<ItemDtoGetBooking> itemDtoList = new ArrayList<>();
 
-        for (Item item : itemRepository.findByOwner(userId)) {
+        for (Item item : itemRepository.findByOwner(userId, PageRequest.of(from, size)).getContent()) {
             BookingDtoItem lastBooking = null;
             BookingDtoItem nextBooking = null;
             List<Comment> commentList = commentRepository.findByItemId(item.getId());
