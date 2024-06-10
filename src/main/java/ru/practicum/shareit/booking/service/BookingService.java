@@ -139,13 +139,13 @@ public class BookingService {
                     Status.REJECTED, PageRequest.of(page, size)).getContent());
         } else if (State.valueOf(state) == State.FUTURE) {
             bookingList = new ArrayList<>(bookingRepository.future(bookerId, LocalDateTime.now(), Status.APPROVED,
-                                          Status.WAITING, PageRequest.of(page, size)).getContent());
+                    Status.WAITING, PageRequest.of(page, size)).getContent());
         } else if (State.valueOf(state) == State.PAST) {
             bookingList = new ArrayList<>(bookingRepository.paste(bookerId, LocalDateTime.now(), Status.APPROVED,
-                                          PageRequest.of(page, size)).getContent());
+                    PageRequest.of(page, size)).getContent());
         } else if (State.valueOf(state) == State.CURRENT) {
             bookingList = new ArrayList<>(bookingRepository.current(bookerId, LocalDateTime.now(),
-                                          Status.APPROVED, Status.REJECTED, PageRequest.of(page, size)).getContent());
+                    Status.APPROVED, Status.REJECTED, PageRequest.of(page, size)).getContent());
         }
         for (Booking booking : bookingList) {
             BookerDto bookerDto = BookerDto.builder()
@@ -161,10 +161,10 @@ public class BookingService {
     }
 
     public List<BookingDtoGet> getAllOwnerBooking(int ownerId, String state, int page, int size) {
-        if (page == 1 && size == 1) {//Не могу понять почему не проходит тест, вводил чтобы посмотреть что вообще дает
-            page = 0;//Почему-то не хватает элемента по всей коллекции тестов
+        if (page < 0) {//Аннотация Min не срабатывала
+            throw new RuntimeException();
         }
-        List<Item> ownerItemList = itemRepository.findByOwner(ownerId, PageRequest.of(page, size)).getContent();
+        List<Item> ownerItemList = itemRepository.findByOwner(ownerId);
         List<BookingDtoGet> bookingDtoList = new ArrayList<>();
 
         try {
@@ -182,24 +182,27 @@ public class BookingService {
 
             if (stateEnum.equals(State.ALL)) {
                 bookingList = new ArrayList<>(bookingRepository.findByItemIdOrderByStartDesc(itemId,
-                        PageRequest.of(page, size)).getContent());
-                System.out.println(bookingRepository.findByItemIdOrderByStartDesc(itemId,
-                        PageRequest.of(page, size)).getContent());
+                        PageRequest.of(page / size, size)).getContent());
             } else if (stateEnum.equals(State.WAITING)) {
                 bookingList = new ArrayList<>(bookingRepository.findByItemIdAndStatusOrderByStartDesc(itemId,
-                        Status.WAITING, PageRequest.of(page, size)).getContent());
+                        Status.WAITING,
+                        PageRequest.of(page / size, size)).getContent());
             } else if (stateEnum.equals(State.REJECTED)) {
                 bookingList = new ArrayList<>(bookingRepository.findByItemIdAndStatusOrderByStartDesc(itemId,
-                        Status.REJECTED, PageRequest.of(page, size)).getContent());
+                        Status.REJECTED,
+                        PageRequest.of(page / size, size)).getContent());
             } else if (stateEnum.equals(State.FUTURE)) {
                 bookingList = new ArrayList<>(bookingRepository.futureItemId(itemId, LocalDateTime.now(), Status.APPROVED,
-                        Status.WAITING, PageRequest.of(page, size)).getContent());
+                        Status.WAITING,
+                        PageRequest.of(page / size, size)).getContent());
             } else if (stateEnum.equals(State.PAST)) {
                 bookingList = new ArrayList<>(bookingRepository.pasteItemId(itemId, LocalDateTime.now(),
-                        Status.APPROVED, PageRequest.of(page, size)).getContent());
+                        Status.APPROVED,
+                        PageRequest.of(page / size, size)).getContent());
             } else if (stateEnum.equals(State.CURRENT)) {
                 bookingList = new ArrayList<>(bookingRepository.currentItemId(itemId, LocalDateTime.now(),
-                                              Status.APPROVED, Status.REJECTED, PageRequest.of(page, size)).getContent());
+                        Status.APPROVED, Status.REJECTED,
+                        PageRequest.of(page / size, size)).getContent());
             }
             for (Booking booking : bookingList) {
                 BookerDto bookerDto = BookerDto.builder()
