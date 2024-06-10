@@ -10,6 +10,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@ToString
 @Table(name = "items", schema = "public",
         uniqueConstraints = {
                 @UniqueConstraint(columnNames = "id")

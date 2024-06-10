@@ -12,6 +12,7 @@ public interface ItemRepository extends JpaRepository<Item, Integer> {
     public Item findByNameAndOwner(String name, int ownerId);
 
     public Page<Item> findByOwner(int ownerId, Pageable pageable);
+    public List<Item> findByOwner(int ownerId);
 
     @Query(" select i from Item i " +
             "where upper(i.name) like upper(concat('%', ?1, '%')) " +
