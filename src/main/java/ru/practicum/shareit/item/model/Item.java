@@ -12,6 +12,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Builder
 @ToString
+@EqualsAndHashCode
 @Table(name = "items", schema = "public",
         uniqueConstraints = {
                 @UniqueConstraint(columnNames = "id")

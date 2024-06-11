@@ -11,6 +11,7 @@ import javax.validation.constraints.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
+@EqualsAndHashCode
 @Table(name = "users", schema = "public",
 uniqueConstraints = {
         @UniqueConstraint(columnNames = "id"),
