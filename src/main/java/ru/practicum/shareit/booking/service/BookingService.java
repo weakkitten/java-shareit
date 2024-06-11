@@ -1,9 +1,7 @@
 package ru.practicum.shareit.booking.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.*;
@@ -112,9 +110,7 @@ public class BookingService {
     }
 
     public List<BookingDtoGet> getAllUserBooking(int bookerId, String state, int page, int size) {
-        if (page < 0) {//Аннотация Min не срабатывала
-            throw new RuntimeException();
-        }
+        if (page < 0) throw new RuntimeException();
         List<Booking> bookingList = null;
         List<BookingDtoGet> bookingDtoList = new ArrayList<>();
 
@@ -130,22 +126,22 @@ public class BookingService {
         if (State.valueOf(state) == State.ALL) {
             System.out.println("Мы тут?");
             bookingList = new ArrayList<>(bookingRepository.findByBookerIdOrderByStartDesc(bookerId,
-                                                            PageRequest.of(page /size, size)).getContent());
+                                                            PageRequest.of(page / size, size)).getContent());
         } else if (State.valueOf(state) == State.WAITING) {
             bookingList = new ArrayList<>(bookingRepository.findByBookerIdAndStatusOrderByStartDesc(bookerId,
-                    Status.WAITING, PageRequest.of(page, size)).getContent());
+                    Status.WAITING, PageRequest.of(page / size, size)).getContent());
         } else if (State.valueOf(state) == State.REJECTED) {
             bookingList = new ArrayList<>(bookingRepository.findByBookerIdAndStatusOrderByStartDesc(bookerId,
-                    Status.REJECTED, PageRequest.of(page, size)).getContent());
+                    Status.REJECTED, PageRequest.of(page / size, size)).getContent());
         } else if (State.valueOf(state) == State.FUTURE) {
             bookingList = new ArrayList<>(bookingRepository.future(bookerId, LocalDateTime.now(), Status.APPROVED,
-                    Status.WAITING, PageRequest.of(page, size)).getContent());
+                    Status.WAITING, PageRequest.of(page / size, size)).getContent());
         } else if (State.valueOf(state) == State.PAST) {
             bookingList = new ArrayList<>(bookingRepository.paste(bookerId, LocalDateTime.now(), Status.APPROVED,
-                    PageRequest.of(page, size)).getContent());
+                    PageRequest.of(page / size, size)).getContent());
         } else if (State.valueOf(state) == State.CURRENT) {
             bookingList = new ArrayList<>(bookingRepository.current(bookerId, LocalDateTime.now(),
-                    Status.APPROVED, Status.REJECTED, PageRequest.of(page, size)).getContent());
+                    Status.APPROVED, Status.REJECTED, PageRequest.of(page / size, size)).getContent());
         }
         for (Booking booking : bookingList) {
             BookerDto bookerDto = BookerDto.builder()
@@ -161,9 +157,7 @@ public class BookingService {
     }
 
     public List<BookingDtoGet> getAllOwnerBooking(int ownerId, String state, int page, int size) {
-        if (page < 0) {//Аннотация Min не срабатывала
-            throw new RuntimeException();
-        }
+        if (page < 0) throw new RuntimeException();
         List<Item> ownerItemList = itemRepository.findByOwner(ownerId);
         List<BookingDtoGet> bookingDtoList = new ArrayList<>();
 

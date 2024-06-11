@@ -20,6 +20,7 @@ import ru.practicum.shareit.user.repository.UserRepository;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 @Service
@@ -46,47 +47,82 @@ public class RequestService {
 
     public List<RequestDtoWithListItem> getAllUserRequest(int requesterId) {
         List<ItemRequest> requestsList = requestRepository.findByRequesterIdOrderByCreatedDesc(requesterId);
-        List<RequestDtoWithListItem> requestDtoWithListItems = new ArrayList<>();
+        List<Integer> requestIdList = new ArrayList<>();
+        List<RequestDtoWithListItem> requestDtoWithListItem = new ArrayList<>();
 
         if (userRepository.findById(requesterId).isEmpty()) {
             throw new NotFoundException("Пользователь с таким id не найден");
         }
         for (ItemRequest request : requestsList) {
-            List<Item> itemList = itemRepository.findByRequest(request.getId());
-            List<ItemDtoForRequest> itemDtoForRequestList = new ArrayList<>();
-            for (Item item : itemList) {
-                itemDtoForRequestList.add(ItemMapper.itemDtoForRequest(item));
-            }
-            RequestDtoWithListItem requestDtoWithListItem = RequestMapper.toRequestDtoWithListItem(request,
-                                                                                      itemDtoForRequestList);
-            requestDtoWithListItems.add(requestDtoWithListItem);
+            requestIdList.add(request.getId());
         }
-        return requestDtoWithListItems;
+        List<Item> itemList = itemRepository.findByRequestIn(requestIdList);
+        if (!itemList.isEmpty()) {
+            HashMap<Integer, List<ItemDtoForRequest>> itemDtoForRequestMap = new HashMap<>();
+            for (Item item : itemList) {
+                if (itemDtoForRequestMap.containsKey(item.getRequest())) {
+                    itemDtoForRequestMap.get(item.getRequest()).add(ItemMapper.itemDtoForRequest(item));
+                } else {
+                    List<ItemDtoForRequest> tempList = new ArrayList<>();
+                    tempList.add(ItemMapper.itemDtoForRequest(item));
+                    itemDtoForRequestMap.put(item.getRequest(), tempList);
+                }
+            }
+            for (ItemRequest itemRequest : requestsList) {
+                requestDtoWithListItem.add(RequestMapper.toRequestDtoWithListItem(itemRequest,
+                        itemDtoForRequestMap.get(itemRequest.getId())));
+            }
+            return requestDtoWithListItem;
+        } else {
+            for (ItemRequest itemRequest : requestsList) {
+                requestDtoWithListItem.add(RequestMapper.toRequestDtoWithListItem(itemRequest,
+                        new ArrayList<>()));
+            }
+            return requestDtoWithListItem;
+        }
     }
 
     public List<RequestDtoWithListItem> getAllOtherUsersRequest(int from, int size, int requesterId) {
-        List<RequestDtoWithListItem> requestDtoWithListItems = new ArrayList<>();
+        List<RequestDtoWithListItem> requestDtoWithListItem = new ArrayList<>();
 
         if (size == -5) {
-            return requestDtoWithListItems;
+            return requestDtoWithListItem;
         }
-        Page<ItemRequest> requestBody = requestRepository.findByNotRequesterId(requesterId,
-                PageRequest.of(from, size));
-        if (requestBody.getContent().isEmpty()) {
-            return requestDtoWithListItems;
+        List<ItemRequest> requestList = requestRepository.findByNotRequesterId(requesterId,
+                PageRequest.of(from, size)).getContent();
+        if (requestList.isEmpty()) {
+            return requestDtoWithListItem;
         }
-        for (ItemRequest itemRequest : requestBody) {
-            List<Item> itemList = itemRepository.findByRequest(itemRequest.getRequesterId());
-            List<ItemDtoForRequest> itemDtoForRequestList = new ArrayList<>();
+        System.out.println("Вот тут");
+        List<Integer> requestIdList = new ArrayList<>();
+
+        for (ItemRequest request : requestList) {
+            requestIdList.add(request.getId());
+        }
+        List<Item> itemList = itemRepository.findByRequestIn(requestIdList);
+        if (!itemList.isEmpty()) {
+            HashMap<Integer, List<ItemDtoForRequest>> itemDtoForRequestMap = new HashMap<>();
             for (Item item : itemList) {
-                ItemDtoForRequest itemDtoForRequest = ItemMapper.itemDtoForRequest(item);
-                itemDtoForRequestList.add(itemDtoForRequest);
+                if (itemDtoForRequestMap.containsKey(item.getRequest())) {
+                    itemDtoForRequestMap.get(item.getRequest()).add(ItemMapper.itemDtoForRequest(item));
+                } else {
+                    List<ItemDtoForRequest> tempList = new ArrayList<>();
+                    tempList.add(ItemMapper.itemDtoForRequest(item));
+                    itemDtoForRequestMap.put(item.getRequest(), tempList);
+                }
             }
-            RequestDtoWithListItem requestDtoWithListItem = RequestMapper.toRequestDtoWithListItem(itemRequest,
-                    itemDtoForRequestList);
-            requestDtoWithListItems.add(requestDtoWithListItem);
+            for (ItemRequest itemRequest : requestList) {
+                requestDtoWithListItem.add(RequestMapper.toRequestDtoWithListItem(itemRequest,
+                        itemDtoForRequestMap.get(itemRequest.getId())));
+            }
+            return requestDtoWithListItem;
+        } else {
+            for (ItemRequest itemRequest : requestList) {
+                requestDtoWithListItem.add(RequestMapper.toRequestDtoWithListItem(itemRequest,
+                        new ArrayList<>()));
+            }
+            return requestDtoWithListItem;
         }
-        return requestDtoWithListItems;
     }
 
     public RequestDtoWithListItem getRequest(int requesterId, int requestId) {

@@ -74,13 +74,11 @@ public class ItemService {
         Item item = itemRepository.findById(itemId).get();
         BookingDtoItem lastBooking = null;
         BookingDtoItem nextBooking = null;
-        List<Comment> commentList = commentRepository.findByItemId(itemId);
+        List<Comment> commentList = commentRepository.findByIdAndUserName(itemId);
         List<CommentGet> commentGetList = new ArrayList<>();
         for (Comment comment : commentList) {
-            commentGetList.add(CommentMapper.toCommentGet(comment,
-                    userRepository.findById(comment.getAuthorId()).get().getName()));
+            commentGetList.add(CommentMapper.toCommentGet(comment, comment.getUser().getName()));
         }
-
         if (item.getOwner() != userId) {
             return ItemMapper.itemDtoGetBooking(item, lastBooking, nextBooking, commentGetList);
         }
@@ -101,11 +99,10 @@ public class ItemService {
         for (Item item : itemRepository.findByOwner(userId, PageRequest.of(from, size)).getContent()) {
             BookingDtoItem lastBooking = null;
             BookingDtoItem nextBooking = null;
-            List<Comment> commentList = commentRepository.findByItemId(item.getId());
+            List<Comment> commentList = commentRepository.findByIdAndUserName(userId);
             List<CommentGet> commentGetList = new ArrayList<>();
             for (Comment comment : commentList) {
-                commentGetList.add(CommentMapper.toCommentGet(comment,
-                        userRepository.findById(comment.getAuthorId()).get().getName()));
+                commentGetList.add(CommentMapper.toCommentGet(comment, comment.getUser().getName()));
             }
             if (!bookingRepository.lastBooking(item.getId(), Status.APPROVED, LocalDateTime.now()).isEmpty()) {
                 lastBooking = BookingMapper.toBookingDtoItem(bookingRepository.lastBooking(item.getId(),

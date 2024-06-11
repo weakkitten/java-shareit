@@ -4,5 +4,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import ru.practicum.shareit.user.model.User;
 
 public interface UserRepository extends JpaRepository<User, Integer> {
-    public boolean findByEmailContainingIgnoreCase(String email);
+    boolean findByEmailContainingIgnoreCase(String email);
 }

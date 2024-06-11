@@ -8,8 +8,6 @@ import ru.practicum.shareit.booking.dto.BookingDtoGet;
 import ru.practicum.shareit.booking.service.BookingService;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.Positive;
 import java.util.List;
 
 @RestController
@@ -40,22 +38,18 @@ public class BookingController {
     public List<BookingDtoGet> getAllUserBooking(@RequestHeader("X-Sharer-User-Id") int bookerId,
                                                  @RequestParam(defaultValue = "ALL") String state,
                                                  @RequestParam(name = "from",
-                                                               required = false,
                                                                defaultValue = "0") int from,
                                                  @RequestParam(name = "size",
-                                                               required = false,
                                                                defaultValue = "20") int size) {
         return service.getAllUserBooking(bookerId, state, from, size);
     }
 
     @GetMapping("/owner")
     public List<BookingDtoGet> getAllOwnerBooking(@RequestHeader("X-Sharer-User-Id") int userId,
-                                                  @RequestParam(defaultValue = "ALL", required = false) String state,
+                                                  @RequestParam(defaultValue = "ALL") String state,
                                                   @RequestParam(name = "from",
-                                                                required = false,
                                                                 defaultValue = "0") int from,
                                                   @RequestParam(name = "size",
-                                                                required = false,
                                                                 defaultValue = "20") int size) {
         return service.getAllOwnerBooking(userId, state, from, size);
     }
