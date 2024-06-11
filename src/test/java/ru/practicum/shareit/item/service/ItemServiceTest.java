@@ -10,13 +10,16 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.comments.repository.CommentRepository;
+import ru.practicum.shareit.error.exception.NotFoundException;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemDtoGet;
+import ru.practicum.shareit.item.dto.ItemDtoGetBooking;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
-
+import java.util.ArrayList;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -35,41 +38,93 @@ class ItemServiceTest {
     @Mock
     private BookingRepository bookingRepository;
 
+    Item item = Item.builder()
+            .id(0)
+            .name("Имя")
+            .description("Описание")
+            .available(true)
+            .owner(1)
+            .request(1)
+            .build();
+    ItemDto dto = ItemDto.builder()
+            .id(item.getId())
+            .name(item.getName())
+            .description(item.getDescription())
+            .available(item.isAvailable())
+            .owner(item.getOwner())
+            .requestId(item.getRequest())
+            .build();
+    User user = User.builder()
+            .id(1)
+            .name("Имя")
+            .email("почта@gmail.com")
+            .build();
+
+    @Test
+    void createItemReturnException() {
+        assertThrows(NotFoundException.class, () -> service.getItem(0, 20));
+    }
+
     @Test
     void createItem() {
-        Item item = Item.builder()
-                .id(0)
-                .name("Имя")
-                .description("Описание")
-                .available(true)
-                .owner(1)
-                .request(1)
-                .build();
-        ItemDto dto = ItemDto.builder()
-                .id(item.getId())
-                .name(item.getName())
-                .description(item.getDescription())
-                .available(item.isAvailable())
-                .owner(item.getOwner())
-                .requestId(item.getRequest())
-                .build();
-        User user = User.builder()
-                .id(1)
-                .name("Имя")
-                .email("почта@gmail.com")
-                .build();
-
         Mockito.when(userRepository.findById(Mockito.anyInt())).thenReturn(Optional.ofNullable(user));
         Mockito.when(itemRepository.findByNameAndOwner("Имя", 1)).thenReturn(item);
         assertEquals(service.createItem(1, dto), ItemMapper.toItemDtoGet(item));
     }
 
     @Test
+    void updateItemReturnNotFoundException() {
+        Mockito.when(itemRepository.findById(0)).thenReturn(Optional.ofNullable(item));
+        assertThrows(NotFoundException.class, () -> service.updateItem(0, 20, dto));
+    }
+
+    @Test
     void updateItem() {
+        Item itemUpdate = Item.builder()
+                .id(0)
+                .name("Обновление")
+                .description("Обновление")
+                .available(true)
+                .owner(1)
+                .request(1)
+                .build();
+        ItemDto itemUpdateDto = ItemDto.builder()
+                .id(itemUpdate.getId())
+                .name(itemUpdate.getName())
+                .description(itemUpdate.getDescription())
+                .available(itemUpdate.isAvailable())
+                .owner(itemUpdate.getOwner())
+                .requestId(itemUpdate.getRequest())
+                .build();
+        ItemDtoGet itemUpdateDtoGet = ItemDtoGet.builder()
+                .id(itemUpdate.getId())
+                .name(itemUpdate.getName())
+                .description(itemUpdate.getDescription())
+                .available(itemUpdate.isAvailable())
+                .requestId(itemUpdate.getRequest())
+                .build();
+
+
+        Mockito.when(itemRepository.findById(0)).thenReturn(Optional.ofNullable(item));
+        Mockito.when(itemRepository.save(itemUpdate)).thenReturn(itemUpdate);
+        assertEquals(service.updateItem(0, 1, itemUpdateDto), itemUpdateDtoGet);
     }
 
     @Test
     void getItem() {
+        Mockito.when(itemRepository.findById(Mockito.anyInt())).thenReturn(Optional.ofNullable(item));
+        Mockito.when(commentRepository.findByIdAndUserName(Mockito.anyInt())).thenReturn(new ArrayList<>());
+        ItemDtoGetBooking itemDtoGetBooking = ItemMapper.itemDtoGetBooking(item,
+                null,
+                null,
+                new ArrayList<>());
+        assertEquals(service.getItem(item.getId(), item.getOwner()), itemDtoGetBooking);
+    }
+
+    @Test
+    void getItemReturnNotFound() {
+        Mockito.when(itemRepository.findById(Mockito.anyInt())).thenThrow(NotFoundException.class);
+        assertThrows(NotFoundException.class, () -> service.getItem(0, 20));
     }
 
     @Test
