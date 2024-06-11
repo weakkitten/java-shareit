@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 @ToString
+@EqualsAndHashCode
 @Table(name = "COMMENTS", schema = "public",
         uniqueConstraints = {
                 @UniqueConstraint(columnNames = "id")
