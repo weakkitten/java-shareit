@@ -10,7 +10,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.comments.repository.CommentRepository;
-import ru.practicum.shareit.error.exception.NotFoundException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
@@ -63,11 +62,6 @@ class ItemServiceTest {
         Mockito.when(userRepository.findById(Mockito.anyInt())).thenReturn(Optional.ofNullable(user));
         Mockito.when(itemRepository.findByNameAndOwner("Имя", 1)).thenReturn(item);
         assertEquals(service.createItem(1, dto), ItemMapper.toItemDtoGet(item));
-    }
-
-    @Test
-    void createItemReturnException() {
-        Mockito.when(userRepository.findById(Mockito.anyInt())).thenThrow(NotFoundException.class);
     }
 
     @Test
