@@ -194,11 +194,227 @@ class BookingServiceTest {
     }
 
     @Test
-    void updateBooking() {
+    void updateBookingBookingReject() {
+        Booking booking = Booking.builder()
+                .id(0)
+                .itemId(1)
+                .start(LocalDateTime.of(2024, 6, 11, 11, 11))
+                .end(LocalDateTime.of(2024, 6, 12, 11, 11))
+                .status(Status.WAITING)
+                .bookerId(1)
+                .build();
+        Item item = Item.builder()
+                .id(0)
+                .name("Имя предмета")
+                .owner(0)
+                .request(1)
+                .description("Описание предмета")
+                .available(true)
+                .build();
+
+        Mockito.when(bookingRepository.findById(Mockito.anyInt())).thenReturn(Optional.ofNullable(booking));
+        Mockito.when(itemRepository.findById(Mockito.anyInt())).thenReturn(Optional.ofNullable(item));
+        assertThrows(BookingReject.class, () -> service.updateBooking(12, 1, true));
     }
 
     @Test
-    void getBooking() {
+    void updateBookingBadRequestException() {
+        Booking booking = Booking.builder()
+                .id(0)
+                .itemId(1)
+                .start(LocalDateTime.of(2024, 6, 11, 11, 11))
+                .end(LocalDateTime.of(2024, 6, 12, 11, 11))
+                .status(Status.APPROVED)
+                .bookerId(1)
+                .build();
+        Item item = Item.builder()
+                .id(0)
+                .name("Имя предмета")
+                .owner(0)
+                .request(1)
+                .description("Описание предмета")
+                .available(true)
+                .build();
+
+        Mockito.when(bookingRepository.findById(Mockito.anyInt())).thenReturn(Optional.ofNullable(booking));
+        Mockito.when(itemRepository.findById(Mockito.anyInt())).thenReturn(Optional.ofNullable(item));
+        assertThrows(BadRequestException.class, () -> service.updateBooking(0, 1, true));
+    }
+
+    @Test
+    void updateBookingAccept() {
+        Booking booking = Booking.builder()
+                .id(0)
+                .itemId(1)
+                .start(LocalDateTime.of(2024, 6, 11, 11, 11))
+                .end(LocalDateTime.of(2024, 6, 12, 11, 11))
+                .status(Status.WAITING)
+                .bookerId(1)
+                .build();
+        Item item = Item.builder()
+                .id(0)
+                .name("Имя предмета")
+                .owner(0)
+                .request(1)
+                .description("Описание предмета")
+                .available(true)
+                .build();
+        BookerDto bookerDto = BookerDto.builder()
+                .id(1)
+                .build();
+        ItemDtoBooking itemDtoBooking = ItemDtoBooking.builder()
+                .id(1)
+                .name("Имя предмета")
+                .build();
+        Booking bookingAccept = Booking.builder()
+                .id(0)
+                .itemId(1)
+                .start(LocalDateTime.of(2024, 6, 11, 11, 11))
+                .end(LocalDateTime.of(2024, 6, 12, 11, 11))
+                .status(Status.APPROVED)
+                .bookerId(1)
+                .build();
+        BookingDtoGet bookingDtoGet = BookingMapper.bookingToBookingDtoGet(bookingAccept, bookerDto, itemDtoBooking);
+
+        Mockito.when(bookingRepository.findById(Mockito.anyInt())).thenReturn(Optional.ofNullable(booking));
+        Mockito.when(itemRepository.findById(Mockito.anyInt())).thenReturn(Optional.ofNullable(item));
+        Mockito.when(bookingRepository.findById(Mockito.anyInt())).thenReturn(Optional.of(booking));
+        assertEquals(service.updateBooking(0, 1, true), bookingDtoGet);
+    }
+
+    @Test
+    void updateBookingReject() {
+        Booking booking = Booking.builder()
+                .id(0)
+                .itemId(1)
+                .start(LocalDateTime.of(2024, 6, 11, 11, 11))
+                .end(LocalDateTime.of(2024, 6, 12, 11, 11))
+                .status(Status.WAITING)
+                .bookerId(1)
+                .build();
+        Item item = Item.builder()
+                .id(0)
+                .name("Имя предмета")
+                .owner(0)
+                .request(1)
+                .description("Описание предмета")
+                .available(true)
+                .build();
+        BookerDto bookerDto = BookerDto.builder()
+                .id(1)
+                .build();
+        ItemDtoBooking itemDtoBooking = ItemDtoBooking.builder()
+                .id(1)
+                .name("Имя предмета")
+                .build();
+        Booking bookingAccept = Booking.builder()
+                .id(0)
+                .itemId(1)
+                .start(LocalDateTime.of(2024, 6, 11, 11, 11))
+                .end(LocalDateTime.of(2024, 6, 12, 11, 11))
+                .status(Status.REJECTED)
+                .bookerId(1)
+                .build();
+        BookingDtoGet bookingDtoGet = BookingMapper.bookingToBookingDtoGet(bookingAccept, bookerDto, itemDtoBooking);
+
+        Mockito.when(bookingRepository.findById(Mockito.anyInt())).thenReturn(Optional.ofNullable(booking));
+        Mockito.when(itemRepository.findById(Mockito.anyInt())).thenReturn(Optional.ofNullable(item));
+        Mockito.when(bookingRepository.findById(Mockito.anyInt())).thenReturn(Optional.of(booking));
+        assertEquals(service.updateBooking(0, 1, false), bookingDtoGet);
+    }
+
+    @Test
+    void getBookingReturnNotFoundException() {
+        assertThrows(NotFoundException.class, () -> service.getBooking(1, 1));
+    }
+
+    @Test
+    void getBookingReturnBookingRejectWitchBookerId() {
+        Booking booking = Booking.builder()
+                .id(0)
+                .itemId(1)
+                .start(LocalDateTime.of(2024, 6, 11, 11, 11))
+                .end(LocalDateTime.of(2024, 6, 12, 11, 11))
+                .status(Status.WAITING)
+                .bookerId(0)
+                .build();
+        Item item = Item.builder()
+                .id(0)
+                .name("Имя предмета")
+                .owner(0)
+                .request(1)
+                .description("Описание предмета")
+                .available(true)
+                .build();
+        Mockito.when(bookingRepository.findById(Mockito.anyInt())).thenReturn(Optional.ofNullable(booking));
+        Mockito.when(itemRepository.findById(Mockito.anyInt())).thenReturn(Optional.ofNullable(item));
+        assertThrows(BookingReject.class, () -> service.getBooking(1,1));
+    }
+
+    @Test
+    void getBookingWitchBookerId() {
+        Booking booking = Booking.builder()
+                .id(0)
+                .itemId(1)
+                .start(LocalDateTime.of(2024, 6, 11, 11, 11))
+                .end(LocalDateTime.of(2024, 6, 12, 11, 11))
+                .status(Status.WAITING)
+                .bookerId(1)
+                .build();
+        Item item = Item.builder()
+                .id(0)
+                .name("Имя предмета")
+                .owner(1)
+                .request(1)
+                .description("Описание предмета")
+                .available(true)
+                .build();
+        BookerDto bookerDto = BookerDto.builder()
+                .id(1)
+                .build();
+        ItemDtoBooking itemDtoBooking = ItemDtoBooking.builder()
+                .id(1)
+                .name("Имя предмета")
+                .build();
+        BookingDtoGet bookingDtoGet = BookingMapper.bookingToBookingDtoGet(booking, bookerDto, itemDtoBooking);
+
+        Mockito.when(bookingRepository.findById(Mockito.anyInt())).thenReturn(Optional.ofNullable(booking));
+        Mockito.when(itemRepository.findById(Mockito.anyInt())).thenReturn(Optional.ofNullable(item));
+        Mockito.when(bookingRepository.findById(Mockito.anyInt())).thenReturn(Optional.of(booking));
+        assertEquals(service.getBooking(1,1), bookingDtoGet);
+    }
+
+    @Test
+    void getBookingWitchUserId() {
+        Booking booking = Booking.builder()
+                .id(0)
+                .itemId(1)
+                .start(LocalDateTime.of(2024, 6, 11, 11, 11))
+                .end(LocalDateTime.of(2024, 6, 12, 11, 11))
+                .status(Status.WAITING)
+                .bookerId(0)
+                .build();
+        Item item = Item.builder()
+                .id(0)
+                .name("Имя предмета")
+                .owner(1)
+                .request(1)
+                .description("Описание предмета")
+                .available(true)
+                .build();
+        BookerDto bookerDto = BookerDto.builder()
+                .id(0)
+                .build();
+        ItemDtoBooking itemDtoBooking = ItemDtoBooking.builder()
+                .id(1)
+                .name("Имя предмета")
+                .build();
+        BookingDtoGet bookingDtoGet = BookingMapper.bookingToBookingDtoGet(booking, bookerDto, itemDtoBooking);
+
+        Mockito.when(bookingRepository.findById(Mockito.anyInt())).thenReturn(Optional.ofNullable(booking));
+        Mockito.when(itemRepository.findById(Mockito.anyInt())).thenReturn(Optional.ofNullable(item));
+        Mockito.when(bookingRepository.findById(Mockito.anyInt())).thenReturn(Optional.of(booking));
+        assertEquals(service.getBooking(1,1), bookingDtoGet);
     }
 
     @Test
