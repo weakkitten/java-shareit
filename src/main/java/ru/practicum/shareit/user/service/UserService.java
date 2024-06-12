@@ -35,8 +35,9 @@ public class UserService {
     }
 
     @Transactional
-    public void removeUser(int id) {
+    public boolean removeUser(int id) {
         userRepository.deleteById(id);
+        return true;
     }
 
     @Transactional
