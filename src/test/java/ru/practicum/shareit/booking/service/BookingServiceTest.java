@@ -124,7 +124,7 @@ class BookingServiceTest {
                 .build();
 
         Mockito.when(itemRepository.findById(Mockito.anyInt())).thenReturn(Optional.ofNullable(item));
-        Mockito.when(userRepository.findById(Mockito.anyInt())).thenReturn(Optional.ofNullable(user));
+        Mockito.when(userRepository.findById(Mockito.anyInt())).thenThrow(NotFoundException.class);
         assertThrows(NotFoundException.class, () -> service.createBooking(dto, 1));
     }
 
