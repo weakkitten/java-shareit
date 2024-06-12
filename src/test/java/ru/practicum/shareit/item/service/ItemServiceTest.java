@@ -279,6 +279,172 @@ class ItemServiceTest {
     }
 
     @Test
+    void getAllUserItemsWitchLastBookingAndNextBookingWitchComment() {
+        Booking booking = Booking.builder()
+                .id(0)
+                .itemId(1)
+                .start(LocalDateTime.of(2024, 6, 11, 11, 11))
+                .end(LocalDateTime.of(2024, 6, 12, 11, 11))
+                .status(Status.WAITING)
+                .bookerId(0)
+                .build();
+        CommentDto commentDto = CommentDto.builder()
+                .itemId(1)
+                .text("Имя")
+                .authorId(1)
+                .created(LocalDateTime.of(2024, 11,11,11,11))
+                .build();
+        User user = User.builder()
+                .id(1)
+                .name("Имя")
+                .email("почта@gmail.com")
+                .build();
+        Comment comment = CommentMapper.toComment(commentDto, 1, 1);
+        comment.setUser(user);
+        List<CommentGet> commentGetList = new ArrayList<>();
+        commentGetList.add(CommentMapper.toCommentGet(comment, comment.getUser().getName()));
+        BookingDtoItem bookingDtoItem = BookingMapper.toBookingDtoItem(booking);
+        ItemDtoGetBooking itemDtoGetBooking = ItemMapper.itemDtoGetBooking(item, bookingDtoItem,
+                bookingDtoItem, commentGetList);
+
+        Mockito
+                .when(itemRepository.findByOwner(Mockito.anyInt(), Mockito.any(PageRequest.class)))
+                .thenReturn(List.of(item));
+        Mockito.when(commentRepository.findByIdAndUserName(Mockito.anyInt())).thenReturn(List.of(comment));
+        Mockito
+                .when(bookingRepository.lastBooking(Mockito.anyInt(),
+                        Mockito.any(Status.class), Mockito.any(LocalDateTime.class))).thenReturn(List.of(booking));
+        Mockito
+                .when(bookingRepository.nextBooking(Mockito.anyInt(),
+                        Mockito.any(Status.class), Mockito.any(LocalDateTime.class))).thenReturn(List.of(booking));
+        assertEquals(service.getAllUserItems(1, 0, 1), List.of(itemDtoGetBooking));
+    }
+
+    @Test
+    void getAllUserItemsWitchLastBookingWitchComment() {
+        Booking booking = Booking.builder()
+                .id(0)
+                .itemId(1)
+                .start(LocalDateTime.of(2024, 6, 11, 11, 11))
+                .end(LocalDateTime.of(2024, 6, 12, 11, 11))
+                .status(Status.WAITING)
+                .bookerId(0)
+                .build();
+        CommentDto commentDto = CommentDto.builder()
+                .itemId(1)
+                .text("Имя")
+                .authorId(1)
+                .created(LocalDateTime.of(2024, 11,11,11,11))
+                .build();
+        User user = User.builder()
+                .id(1)
+                .name("Имя")
+                .email("почта@gmail.com")
+                .build();
+        Comment comment = CommentMapper.toComment(commentDto, 1, 1);
+        comment.setUser(user);
+        List<CommentGet> commentGetList = new ArrayList<>();
+        commentGetList.add(CommentMapper.toCommentGet(comment, comment.getUser().getName()));
+        BookingDtoItem bookingDtoItem = BookingMapper.toBookingDtoItem(booking);
+        ItemDtoGetBooking itemDtoGetBooking = ItemMapper.itemDtoGetBooking(item, bookingDtoItem,
+                null, commentGetList);
+
+        Mockito
+                .when(itemRepository.findByOwner(Mockito.anyInt(), Mockito.any(PageRequest.class)))
+                .thenReturn(List.of(item));
+        Mockito.when(commentRepository.findByIdAndUserName(Mockito.anyInt())).thenReturn(List.of(comment));
+        Mockito
+                .when(bookingRepository.lastBooking(Mockito.anyInt(),
+                        Mockito.any(Status.class), Mockito.any(LocalDateTime.class))).thenReturn(List.of(booking));
+        assertEquals(service.getAllUserItems(1, 0, 1), List.of(itemDtoGetBooking));
+    }
+
+    @Test
+    void getAllUserItemsWitchLastBookingAndNextBooking() {
+        Booking booking = Booking.builder()
+                .id(0)
+                .itemId(1)
+                .start(LocalDateTime.of(2024, 6, 11, 11, 11))
+                .end(LocalDateTime.of(2024, 6, 12, 11, 11))
+                .status(Status.WAITING)
+                .bookerId(0)
+                .build();
+        User user = User.builder()
+                .id(1)
+                .name("Имя")
+                .email("почта@gmail.com")
+                .build();
+        BookingDtoItem bookingDtoItem = BookingMapper.toBookingDtoItem(booking);
+        ItemDtoGetBooking itemDtoGetBooking = ItemMapper.itemDtoGetBooking(item, bookingDtoItem,
+                bookingDtoItem, List.of());
+
+        Mockito
+                .when(itemRepository.findByOwner(Mockito.anyInt(), Mockito.any(PageRequest.class)))
+                .thenReturn(List.of(item));
+        Mockito
+                .when(bookingRepository.lastBooking(Mockito.anyInt(),
+                        Mockito.any(Status.class), Mockito.any(LocalDateTime.class))).thenReturn(List.of(booking));
+        Mockito
+                .when(bookingRepository.nextBooking(Mockito.anyInt(),
+                        Mockito.any(Status.class), Mockito.any(LocalDateTime.class))).thenReturn(List.of(booking));
+        assertEquals(service.getAllUserItems(1, 0, 1), List.of(itemDtoGetBooking));
+    }
+
+    @Test
+    void getAllUserItemsWitchLastBooking() {
+        Booking booking = Booking.builder()
+                .id(0)
+                .itemId(1)
+                .start(LocalDateTime.of(2024, 6, 11, 11, 11))
+                .end(LocalDateTime.of(2024, 6, 12, 11, 11))
+                .status(Status.WAITING)
+                .bookerId(0)
+                .build();
+        User user = User.builder()
+                .id(1)
+                .name("Имя")
+                .email("почта@gmail.com")
+                .build();
+        BookingDtoItem bookingDtoItem = BookingMapper.toBookingDtoItem(booking);
+        ItemDtoGetBooking itemDtoGetBooking = ItemMapper.itemDtoGetBooking(item, bookingDtoItem,
+                null, List.of());
+        Mockito
+                .when(itemRepository.findByOwner(Mockito.anyInt(), Mockito.any(PageRequest.class)))
+                .thenReturn(List.of(item));
+        Mockito
+                .when(bookingRepository.lastBooking(Mockito.anyInt(),
+                        Mockito.any(Status.class), Mockito.any(LocalDateTime.class))).thenReturn(List.of(booking));
+        assertEquals(service.getAllUserItems(1, 0, 1), List.of(itemDtoGetBooking));
+    }
+
+    @Test
+    void getAllUserItemsWitchNextBooking() {
+        Booking booking = Booking.builder()
+                .id(0)
+                .itemId(1)
+                .start(LocalDateTime.of(2024, 6, 11, 11, 11))
+                .end(LocalDateTime.of(2024, 6, 12, 11, 11))
+                .status(Status.WAITING)
+                .bookerId(0)
+                .build();
+        User user = User.builder()
+                .id(1)
+                .name("Имя")
+                .email("почта@gmail.com")
+                .build();
+        BookingDtoItem bookingDtoItem = BookingMapper.toBookingDtoItem(booking);
+        ItemDtoGetBooking itemDtoGetBooking = ItemMapper.itemDtoGetBooking(item, null,
+                bookingDtoItem, List.of());
+        Mockito
+                .when(itemRepository.findByOwner(Mockito.anyInt(), Mockito.any(PageRequest.class)))
+                .thenReturn(List.of(item));
+        Mockito
+                .when(bookingRepository.nextBooking(Mockito.anyInt(),
+                        Mockito.any(Status.class), Mockito.any(LocalDateTime.class))).thenReturn(List.of(booking));
+        assertEquals(service.getAllUserItems(1, 0, 1), List.of(itemDtoGetBooking));
+    }
+
+    @Test
     void searchItem() {
         List<ItemDtoGet> itemDtoGetList = new ArrayList<>();
         List<Item> itemList = new ArrayList<>();
