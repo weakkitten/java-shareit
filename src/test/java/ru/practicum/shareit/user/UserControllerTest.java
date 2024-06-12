@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -17,11 +16,10 @@ import ru.practicum.shareit.user.service.UserService;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 
 @ExtendWith(MockitoExtension.class)
 class UserControllerTest {
@@ -46,25 +44,25 @@ class UserControllerTest {
     @Test
     void createUser() throws Exception {
         String userJson = mapper.writeValueAsString(userDto);
-        when(service.addUser(Mockito.any(UserDto.class))).thenReturn(userDto);
         mockMvc.perform(post("/users")
                         .content(userJson)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
-/*
+
     @Test
-    void updateUser() {
+    void removeUser() throws Exception {
+        mockMvc.perform(delete("/users/1"))
+                .andExpect(status().isOk());
+
     }
 
     @Test
-    void removeUser() {
+    void getUserById() throws Exception {
+        mockMvc.perform(get("/users/1"))
+                .andExpect(status().isOk());
     }
-
-    @Test
-    void getUserById() {
-    }*/
 
     @Test
     void getAllUsers() throws Exception {
