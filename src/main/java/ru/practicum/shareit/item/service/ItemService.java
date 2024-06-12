@@ -96,7 +96,7 @@ public class ItemService {
     public List<ItemDtoGetBooking> getAllUserItems(int userId, int from, int size) {
         List<ItemDtoGetBooking> itemDtoList = new ArrayList<>();
 
-        for (Item item : itemRepository.findByOwner(userId, PageRequest.of(from, size)).getContent()) {
+        for (Item item : itemRepository.findByOwner(userId, PageRequest.of(from, size))) {
             BookingDtoItem lastBooking = null;
             BookingDtoItem nextBooking = null;
             List<Comment> commentList = commentRepository.findByIdAndUserName(userId);

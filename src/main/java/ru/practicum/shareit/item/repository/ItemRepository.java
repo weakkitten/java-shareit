@@ -11,7 +11,7 @@ import java.util.List;
 public interface ItemRepository extends JpaRepository<Item, Integer> {
     Item findByNameAndOwner(String name, int ownerId);
 
-    Page<Item> findByOwner(int ownerId, Pageable pageable);
+    List<Item> findByOwner(int ownerId, Pageable pageable);
 
     List<Item> findByOwner(int ownerId);
 

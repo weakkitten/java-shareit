@@ -135,13 +135,13 @@ public class BookingService {
                     Status.REJECTED, PageRequest.of(page / size, size)).getContent());
         } else if (State.valueOf(state) == State.FUTURE) {
             bookingList = new ArrayList<>(bookingRepository.future(bookerId, LocalDateTime.now(), Status.APPROVED,
-                    Status.WAITING, PageRequest.of(page / size, size)).getContent());
+                    Status.WAITING, PageRequest.of(page / size, size)));
         } else if (State.valueOf(state) == State.PAST) {
             bookingList = new ArrayList<>(bookingRepository.paste(bookerId, LocalDateTime.now(), Status.APPROVED,
-                    PageRequest.of(page / size, size)).getContent());
+                    PageRequest.of(page / size, size)));
         } else if (State.valueOf(state) == State.CURRENT) {
             bookingList = new ArrayList<>(bookingRepository.current(bookerId, LocalDateTime.now(),
-                    Status.APPROVED, Status.REJECTED, PageRequest.of(page / size, size)).getContent());
+                    Status.APPROVED, Status.REJECTED, PageRequest.of(page / size, size)));
         }
         for (Booking booking : bookingList) {
             BookerDto bookerDto = BookerDto.builder()
@@ -188,15 +188,15 @@ public class BookingService {
             } else if (stateEnum.equals(State.FUTURE)) {
                 bookingList = new ArrayList<>(bookingRepository.futureItemId(itemId, LocalDateTime.now(), Status.APPROVED,
                         Status.WAITING,
-                        PageRequest.of(page / size, size)).getContent());
+                        PageRequest.of(page / size, size)));
             } else if (stateEnum.equals(State.PAST)) {
                 bookingList = new ArrayList<>(bookingRepository.pasteItemId(itemId, LocalDateTime.now(),
                         Status.APPROVED,
-                        PageRequest.of(page / size, size)).getContent());
+                        PageRequest.of(page / size, size)));
             } else if (stateEnum.equals(State.CURRENT)) {
                 bookingList = new ArrayList<>(bookingRepository.currentItemId(itemId, LocalDateTime.now(),
                         Status.APPROVED, Status.REJECTED,
-                        PageRequest.of(page / size, size)).getContent());
+                        PageRequest.of(page / size, size)));
             }
             for (Booking booking : bookingList) {
                 BookerDto bookerDto = BookerDto.builder()

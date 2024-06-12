@@ -8,6 +8,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import ru.practicum.shareit.booking.dto.BookingDtoItem;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.repository.BookingRepository;
@@ -141,12 +142,13 @@ class ItemServiceTest {
 
     @Test
     void getAllUserItems() {
-        List<ItemDtoGetBooking> finalList = new ArrayList<>();
-        BookingDtoItem lastBooking = null;
-        BookingDtoItem nextBooking = null;
-        List<Comment> commentList = new ArrayList<>();
-        itemRepository.save(item);
+        ItemDtoGetBooking itemDtoGetBooking = ItemMapper.itemDtoGetBooking(item, null, null, List.of());
 
+        Mockito
+                .when(itemRepository.findByOwner(Mockito.anyInt(), Mockito.any(PageRequest.class)))
+                .thenReturn(List.of(item));
+
+        assertEquals(service.getAllUserItems(1, 0, 1), List.of(itemDtoGetBooking));
     }
 
     @Test

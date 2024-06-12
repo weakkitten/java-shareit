@@ -15,5 +15,5 @@ public interface RequestRepository extends JpaRepository<ItemRequest, Integer> {
 
     @Query("select r from ItemRequest r " +
             "where r.requesterId <> ?1")
-    Page<ItemRequest> findByNotRequesterId(int requesterId, Pageable pageable);
+    List<ItemRequest> findByNotRequesterId(int requesterId, Pageable pageable);
 }

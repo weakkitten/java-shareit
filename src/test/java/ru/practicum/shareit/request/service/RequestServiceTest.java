@@ -8,6 +8,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import ru.practicum.shareit.error.exception.NotFoundException;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
@@ -102,7 +103,16 @@ class RequestServiceTest {
     }
 
     @Test
-    void getAllOtherUsersRequest() {//Не понимаю как писать тесты для Page
+    void getAllOtherUsersRequest() {
+        List<RequestDtoWithListItem> requestDtoWithListItems = new ArrayList<>();
+        RequestDtoWithListItem requestDtoWithListItem = RequestMapper
+                .toRequestDtoWithListItem(request, List.of());
+        requestDtoWithListItems.add(requestDtoWithListItem);
+
+        Mockito
+                .when(requestRepository.findByNotRequesterId(Mockito.anyInt(), Mockito.any(PageRequest.class)))
+                .thenReturn(List.of(request));
+        assertEquals(service.getAllOtherUsersRequest(0,1, 1), requestDtoWithListItems);
     }
 
     @Test

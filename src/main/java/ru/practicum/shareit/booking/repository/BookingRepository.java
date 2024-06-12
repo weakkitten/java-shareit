@@ -28,14 +28,14 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
             " or b.status = ?4)" +
             " and ?2 < b.start" +
             " order by b.start desc")
-    Page<Booking> future(int bookerId, LocalDateTime now, Status app, Status wait, Pageable pageable);
+    List<Booking> future(int bookerId, LocalDateTime now, Status app, Status wait, Pageable pageable);
 
     @Query("select b from Booking b " +
             "where b.bookerId = ?1" +
             " and b.status = ?3" +
             " and b.end < ?2" +
             " order by b.start desc")
-    Page<Booking> paste(int bookerId, LocalDateTime now, Status status, Pageable pageable);
+    List<Booking> paste(int bookerId, LocalDateTime now, Status status, Pageable pageable);
 
     @Query("select b from Booking b " +
             "where b.bookerId = ?1" +
@@ -44,7 +44,7 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
             " and b.start <= ?2" +
             " and b.end > ?2" +
             " order by b.start desc")
-    Page<Booking> current(int bookerId, LocalDateTime now, Status status, Status rej, Pageable pageable);
+    List<Booking> current(int bookerId, LocalDateTime now, Status status, Status rej, Pageable pageable);
 
     @Query("select b from Booking b " +
             "where b.itemId = ?1" +
@@ -52,14 +52,14 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
             " or b.status = ?4)" +
             " and ?2 < b.start" +
             " order by b.start desc")
-    Page<Booking> futureItemId(int itemId, LocalDateTime now, Status app, Status wait, Pageable pageable);
+    List<Booking> futureItemId(int itemId, LocalDateTime now, Status app, Status wait, Pageable pageable);
 
     @Query("select b from Booking b " +
             "where b.itemId = ?1" +
             " and b.status = ?3" +
             " and b.end < ?2" +
             " order by b.start desc")
-    Page<Booking> pasteItemId(int itemId, LocalDateTime now, Status status, Pageable pageable);
+    List<Booking> pasteItemId(int itemId, LocalDateTime now, Status status, Pageable pageable);
 
     @Query("select b from Booking b " +
             "where b.itemId = ?1" +
@@ -68,7 +68,7 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
             " and b.start <= ?2" +
             " and b.end > ?2" +
             " order by b.start desc")
-    Page<Booking> currentItemId(int itemId, LocalDateTime now, Status status, Status rej, Pageable pageable);
+    List<Booking> currentItemId(int itemId, LocalDateTime now, Status status, Status rej, Pageable pageable);
 
     @Query("select b from Booking b " +
             "where b.itemId = ?1" +

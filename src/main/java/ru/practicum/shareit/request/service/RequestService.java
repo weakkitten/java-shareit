@@ -89,7 +89,7 @@ public class RequestService {
         }
 
         List<ItemRequest> requestList = requestRepository.findByNotRequesterId(requesterId,
-                PageRequest.of(from, size)).getContent();
+                PageRequest.of(from, size));
         if (requestList.isEmpty()) {
             return requestDtoWithListItem;
         }
