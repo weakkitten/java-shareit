@@ -23,7 +23,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 @ExtendWith(MockitoExtension.class)
-@TestPropertySource(properties = { "db.name=test"})
 class UserServiceTest {
     @InjectMocks
     private UserService userService;

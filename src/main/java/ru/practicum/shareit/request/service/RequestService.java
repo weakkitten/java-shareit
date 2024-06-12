@@ -87,12 +87,12 @@ public class RequestService {
         if (size == -5) {
             return requestDtoWithListItem;
         }
+
         List<ItemRequest> requestList = requestRepository.findByNotRequesterId(requesterId,
                 PageRequest.of(from, size)).getContent();
         if (requestList.isEmpty()) {
             return requestDtoWithListItem;
         }
-        System.out.println("Вот тут");
         List<Integer> requestIdList = new ArrayList<>();
 
         for (ItemRequest request : requestList) {
