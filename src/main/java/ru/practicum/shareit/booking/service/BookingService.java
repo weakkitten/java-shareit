@@ -126,13 +126,13 @@ public class BookingService {
         if (State.valueOf(state) == State.ALL) {
             System.out.println("Мы тут?");
             bookingList = new ArrayList<>(bookingRepository.findByBookerIdOrderByStartDesc(bookerId,
-                                                            PageRequest.of(page / size, size)).getContent());
+                                                            PageRequest.of(page / size, size)));
         } else if (State.valueOf(state) == State.WAITING) {
             bookingList = new ArrayList<>(bookingRepository.findByBookerIdAndStatusOrderByStartDesc(bookerId,
-                    Status.WAITING, PageRequest.of(page / size, size)).getContent());
+                    Status.WAITING, PageRequest.of(page / size, size)));
         } else if (State.valueOf(state) == State.REJECTED) {
             bookingList = new ArrayList<>(bookingRepository.findByBookerIdAndStatusOrderByStartDesc(bookerId,
-                    Status.REJECTED, PageRequest.of(page / size, size)).getContent());
+                    Status.REJECTED, PageRequest.of(page / size, size)));
         } else if (State.valueOf(state) == State.FUTURE) {
             bookingList = new ArrayList<>(bookingRepository.future(bookerId, LocalDateTime.now(), Status.APPROVED,
                     Status.WAITING, PageRequest.of(page / size, size)));
@@ -176,15 +176,15 @@ public class BookingService {
 
             if (stateEnum.equals(State.ALL)) {
                 bookingList = new ArrayList<>(bookingRepository.findByItemIdOrderByStartDesc(itemId,
-                        PageRequest.of(page / size, size)).getContent());
+                        PageRequest.of(page / size, size)));
             } else if (stateEnum.equals(State.WAITING)) {
                 bookingList = new ArrayList<>(bookingRepository.findByItemIdAndStatusOrderByStartDesc(itemId,
                         Status.WAITING,
-                        PageRequest.of(page / size, size)).getContent());
+                        PageRequest.of(page / size, size)));
             } else if (stateEnum.equals(State.REJECTED)) {
                 bookingList = new ArrayList<>(bookingRepository.findByItemIdAndStatusOrderByStartDesc(itemId,
                         Status.REJECTED,
-                        PageRequest.of(page / size, size)).getContent());
+                        PageRequest.of(page / size, size)));
             } else if (stateEnum.equals(State.FUTURE)) {
                 bookingList = new ArrayList<>(bookingRepository.futureItemId(itemId, LocalDateTime.now(), Status.APPROVED,
                         Status.WAITING,
