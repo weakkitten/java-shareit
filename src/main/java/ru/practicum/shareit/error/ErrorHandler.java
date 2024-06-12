@@ -25,13 +25,6 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponse handleBadEmailException(final BadEmailException e) {
-        log.debug("Почта уже есть в списке");
-        return new ErrorResponse("Такая почта уже используется", e.getMessage());
-    }
-
-    @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleTimeException(final TimeException e) {
         log.debug("Время в аренде некорректно");
