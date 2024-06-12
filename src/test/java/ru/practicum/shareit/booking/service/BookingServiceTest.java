@@ -14,10 +14,7 @@ import ru.practicum.shareit.booking.dto.BookingDtoGet;
 import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.repository.BookingRepository;
-import ru.practicum.shareit.error.exception.BadRequestException;
-import ru.practicum.shareit.error.exception.BookingReject;
-import ru.practicum.shareit.error.exception.NotFoundException;
-import ru.practicum.shareit.error.exception.TimeException;
+import ru.practicum.shareit.error.exception.*;
 import ru.practicum.shareit.item.dto.ItemDtoBooking;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
@@ -26,6 +23,7 @@ import ru.practicum.shareit.user.repository.UserRepository;
 import ru.practicum.shareit.utility.Status;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -418,7 +416,31 @@ class BookingServiceTest {
     }
 
     @Test
+    void getAllUserBookingReturnNotFound() {
+        assertThrows(NotFoundException.class, () -> service.getAllUserBooking(1, "Стейт", 0, 1));
+    }
+
+    @Test
+    void getAllUserBookingReturnUnsupportedState() {
+        User user = User.builder()
+                .id(0)
+                .name("Имя пользователя")
+                .email("Почта@gmail.com")
+                .build();
+        Mockito.when(userRepository.findById(Mockito.anyInt())).thenReturn(Optional.ofNullable(user));
+        assertThrows(UnsupportedState.class, () -> service.getAllUserBooking(1, "Стейт", 0, 1));
+    }
+
+    @Test
     void getAllUserBooking() {
+        List<Booking> bookingList = null;
+        User user = User.builder()
+                .id(0)
+                .name("Имя пользователя")
+                .email("Почта@gmail.com")
+                .build();
+        Mockito.when(userRepository.findById(Mockito.anyInt())).thenReturn(Optional.ofNullable(user));
+        assertThrows(UnsupportedState.class, () -> service.getAllUserBooking(1, "ALL", 0, 1));
     }
 
     @Test

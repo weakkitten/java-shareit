@@ -124,7 +124,6 @@ public class BookingService {
         }
 
         if (State.valueOf(state) == State.ALL) {
-            System.out.println("Мы тут?");
             bookingList = new ArrayList<>(bookingRepository.findByBookerIdOrderByStartDesc(bookerId,
                                                             PageRequest.of(page / size, size)));
         } else if (State.valueOf(state) == State.WAITING) {
