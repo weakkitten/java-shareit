@@ -118,8 +118,8 @@ class RequestServiceTest {
 
     @Test
     void getRequestReturn() {
-        RequestDtoWithListItem requestDtoWithListItem = RequestMapper.
-                toRequestDtoWithListItem(request, List.of(ItemMapper.itemDtoForRequest(item)));
+        RequestDtoWithListItem requestDtoWithListItem = RequestMapper
+                .toRequestDtoWithListItem(request, List.of(ItemMapper.itemDtoForRequest(item)));
 
         Mockito.when(userRepository.findById(Mockito.anyInt())).thenReturn(Optional.ofNullable(user));
         Mockito.when(requestRepository.findById(Mockito.anyInt())).thenReturn(Optional.ofNullable(request));
