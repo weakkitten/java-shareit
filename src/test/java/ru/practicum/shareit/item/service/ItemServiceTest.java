@@ -9,6 +9,8 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import ru.practicum.shareit.booking.dto.BookingDtoItem;
+import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.comments.dto.CommentDto;
@@ -82,6 +84,7 @@ class ItemServiceTest {
         Mockito.when(userRepository.findById(Mockito.anyInt())).thenReturn(Optional.ofNullable(user));
         Mockito.when(itemRepository.findByNameAndOwner("Имя", 1)).thenReturn(item);
         assertEquals(service.createItem(1, dto), ItemMapper.toItemDtoGet(item));
+        Mockito.verify(itemRepository, Mockito.times(1)).save(item);
     }
 
     @Test
@@ -130,6 +133,131 @@ class ItemServiceTest {
                 null,
                 null,
                 new ArrayList<>());
+        assertEquals(service.getItem(item.getId(), item.getOwner()), itemDtoGetBooking);
+    }
+
+    @Test
+    void getItemWitchLastBooking() {
+        Booking booking = Booking.builder()
+                .id(0)
+                .itemId(1)
+                .start(LocalDateTime.of(2024, 6, 11, 11, 11))
+                .end(LocalDateTime.of(2024, 6, 12, 11, 11))
+                .status(Status.WAITING)
+                .bookerId(0)
+                .build();
+        BookingDtoItem bookingDtoItem = BookingMapper.toBookingDtoItem(booking);
+        Mockito.when(itemRepository.findById(Mockito.anyInt())).thenReturn(Optional.ofNullable(item));
+        Mockito.when(commentRepository.findByIdAndUserName(Mockito.anyInt())).thenReturn(new ArrayList<>());
+        Mockito
+                .when(bookingRepository.lastBooking(Mockito.anyInt(),
+                        Mockito.any(Status.class), Mockito.any(LocalDateTime.class))).thenReturn(List.of(booking));
+        ItemDtoGetBooking itemDtoGetBooking = ItemMapper.itemDtoGetBooking(item,
+                bookingDtoItem,
+                null,
+                new ArrayList<>());
+        assertEquals(service.getItem(item.getId(), item.getOwner()), itemDtoGetBooking);
+    }
+
+    @Test
+    void getItemWitchNextBooking() {
+        Booking booking = Booking.builder()
+                .id(0)
+                .itemId(1)
+                .start(LocalDateTime.of(2024, 6, 11, 11, 11))
+                .end(LocalDateTime.of(2024, 6, 12, 11, 11))
+                .status(Status.WAITING)
+                .bookerId(0)
+                .build();
+        BookingDtoItem bookingDtoItem = BookingMapper.toBookingDtoItem(booking);
+        Mockito.when(itemRepository.findById(Mockito.anyInt())).thenReturn(Optional.ofNullable(item));
+        Mockito.when(commentRepository.findByIdAndUserName(Mockito.anyInt())).thenReturn(new ArrayList<>());
+        Mockito
+                .when(bookingRepository.nextBooking(Mockito.anyInt(),
+                        Mockito.any(Status.class), Mockito.any(LocalDateTime.class))).thenReturn(List.of(booking));
+        ItemDtoGetBooking itemDtoGetBooking = ItemMapper.itemDtoGetBooking(item,
+                null,
+                bookingDtoItem,
+                new ArrayList<>());
+        assertEquals(service.getItem(item.getId(), item.getOwner()), itemDtoGetBooking);
+    }
+
+    @Test
+    void getItemWitchLastBookingWitchComment() {
+        Booking booking = Booking.builder()
+                .id(0)
+                .itemId(1)
+                .start(LocalDateTime.of(2024, 6, 11, 11, 11))
+                .end(LocalDateTime.of(2024, 6, 12, 11, 11))
+                .status(Status.WAITING)
+                .bookerId(0)
+                .build();
+        CommentDto commentDto = CommentDto.builder()
+                .itemId(1)
+                .text("Имя")
+                .authorId(1)
+                .created(LocalDateTime.of(2024, 11,11,11,11))
+                .build();
+        User user = User.builder()
+                .id(1)
+                .name("Имя")
+                .email("почта@gmail.com")
+                .build();
+        Comment comment = CommentMapper.toComment(commentDto, 1, 1);
+        comment.setUser(user);
+        List<CommentGet> commentGetList = new ArrayList<>();
+        commentGetList.add(CommentMapper.toCommentGet(comment, comment.getUser().getName()));
+        BookingDtoItem bookingDtoItem = BookingMapper.toBookingDtoItem(booking);
+        Mockito.when(itemRepository.findById(Mockito.anyInt())).thenReturn(Optional.ofNullable(item));
+        Mockito.when(commentRepository.findByIdAndUserName(Mockito.anyInt())).thenReturn(List.of(comment));
+        Mockito
+                .when(bookingRepository.lastBooking(Mockito.anyInt(),
+                        Mockito.any(Status.class), Mockito.any(LocalDateTime.class))).thenReturn(List.of(booking));
+        ItemDtoGetBooking itemDtoGetBooking = ItemMapper.itemDtoGetBooking(item,
+                bookingDtoItem,
+                null,
+                commentGetList);
+        assertEquals(service.getItem(item.getId(), item.getOwner()), itemDtoGetBooking);
+    }
+
+    @Test
+    void getItemWitchLastBookingAndNextBookingAndWitchComment() {
+        Booking booking = Booking.builder()
+                .id(0)
+                .itemId(1)
+                .start(LocalDateTime.of(2024, 6, 11, 11, 11))
+                .end(LocalDateTime.of(2024, 6, 12, 11, 11))
+                .status(Status.WAITING)
+                .bookerId(0)
+                .build();
+        CommentDto commentDto = CommentDto.builder()
+                .itemId(1)
+                .text("Имя")
+                .authorId(1)
+                .created(LocalDateTime.of(2024, 11,11,11,11))
+                .build();
+        User user = User.builder()
+                .id(1)
+                .name("Имя")
+                .email("почта@gmail.com")
+                .build();
+        Comment comment = CommentMapper.toComment(commentDto, 1, 1);
+        comment.setUser(user);
+        List<CommentGet> commentGetList = new ArrayList<>();
+        commentGetList.add(CommentMapper.toCommentGet(comment, comment.getUser().getName()));
+        BookingDtoItem bookingDtoItem = BookingMapper.toBookingDtoItem(booking);
+        Mockito.when(itemRepository.findById(Mockito.anyInt())).thenReturn(Optional.ofNullable(item));
+        Mockito.when(commentRepository.findByIdAndUserName(Mockito.anyInt())).thenReturn(List.of(comment));
+        Mockito
+                .when(bookingRepository.lastBooking(Mockito.anyInt(),
+                        Mockito.any(Status.class), Mockito.any(LocalDateTime.class))).thenReturn(List.of(booking));
+        Mockito
+                .when(bookingRepository.nextBooking(Mockito.anyInt(),
+                        Mockito.any(Status.class), Mockito.any(LocalDateTime.class))).thenReturn(List.of(booking));
+        ItemDtoGetBooking itemDtoGetBooking = ItemMapper.itemDtoGetBooking(item,
+                bookingDtoItem,
+                bookingDtoItem,
+                commentGetList);
         assertEquals(service.getItem(item.getId(), item.getOwner()), itemDtoGetBooking);
     }
 
@@ -220,7 +348,6 @@ class ItemServiceTest {
                 .build();
         Comment comment = CommentMapper.toComment(commentDto, 1, 1);
         CommentGet commentGet = CommentMapper.toCommentGet(comment, "Имя");
-
 
         Mockito
                 .when(bookingRepository.findByBookerIdAndItemIdAndStatusAndEndLessThan(Mockito.anyInt(),
