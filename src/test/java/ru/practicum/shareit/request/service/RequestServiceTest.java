@@ -46,7 +46,7 @@ class RequestServiceTest {
             .build();
 
     User user = User.builder()
-            .id(2)
+            .id(1)
             .name("Имя")
             .email("Почта")
             .build();
@@ -81,8 +81,6 @@ class RequestServiceTest {
 
     @Test
     void getAllUserRequestReturnNotFound() {
-        List<RequestDtoWithListItem> requestDtoWithListItemList = new ArrayList<>();
-        List<Integer> requestIdList = new ArrayList<>();
         List<ItemRequest> itemRequestList = new ArrayList<>();
         itemRequestList.add(request);
         Mockito.when(requestRepository.findByRequesterIdOrderByCreatedDesc(Mockito.anyInt())).thenReturn(itemRequestList);
@@ -99,11 +97,40 @@ class RequestServiceTest {
         Mockito.when(requestRepository.findByRequesterIdOrderByCreatedDesc(Mockito.anyInt())).thenReturn(itemRequestList);
         Mockito.when(userRepository.findById(Mockito.anyInt())).thenReturn(Optional.ofNullable(user));
         Mockito.when(itemRepository.findByRequestIn(Mockito.anyList())).thenReturn(List.of(item));
+        System.out.println(service.getAllUserRequest(1));
+        assertEquals(service.getAllUserRequest(1), requestDtoWithListItemList);
+    }
+
+    @Test
+    void getAllUserRequestList() {
+        List<RequestDtoWithListItem> requestDtoWithListItemList = new ArrayList<>();
+        List<ItemRequest> itemRequestList = new ArrayList<>();
+        requestDtoWithListItemList.add(RequestMapper.toRequestDtoWithListItem(request, List.of()));
+        itemRequestList.add(request);
+
+        Mockito.when(requestRepository.findByRequesterIdOrderByCreatedDesc(Mockito.anyInt())).thenReturn(itemRequestList);
+        Mockito.when(userRepository.findById(Mockito.anyInt())).thenReturn(Optional.ofNullable(user));
+        System.out.println(service.getAllUserRequest(1));
         assertEquals(service.getAllUserRequest(1), requestDtoWithListItemList);
     }
 
     @Test
     void getAllOtherUsersRequest() {
+        List<RequestDtoWithListItem> requestDtoWithListItems = new ArrayList<>();
+        RequestDtoWithListItem requestDtoWithListItem = RequestMapper
+                .toRequestDtoWithListItem(request, null);
+        requestDtoWithListItems.add(requestDtoWithListItem);
+
+        Mockito
+                .when(requestRepository.findByNotRequesterId(Mockito.anyInt(), Mockito.any(PageRequest.class)))
+                .thenReturn(List.of(request));
+        Mockito
+                .when(itemRepository.findByRequestIn(Mockito.anyList())).thenReturn(List.of(item));
+        assertEquals(service.getAllOtherUsersRequest(0,1, 1), requestDtoWithListItems);
+    }
+
+    @Test
+    void getAllOtherUsersRequestList() {
         List<RequestDtoWithListItem> requestDtoWithListItems = new ArrayList<>();
         RequestDtoWithListItem requestDtoWithListItem = RequestMapper
                 .toRequestDtoWithListItem(request, List.of());
