@@ -10,4 +10,5 @@ public class ItemDtoGet {
     private String name;
     private String description;
     private Boolean available;
+    private int requestId;
 }

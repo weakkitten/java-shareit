@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item.model;
 
 import lombok.*;
+import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
 
@@ -10,6 +11,8 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@ToString
+@EqualsAndHashCode
 @Table(name = "items", schema = "public",
         uniqueConstraints = {
                 @UniqueConstraint(columnNames = "id")
@@ -24,4 +27,7 @@ public class Item {
     @Column(name = "owner_id")
     private int owner;
     private int request;
+    @ManyToOne
+    @JoinColumn(name = "owner_id", insertable = false, updatable = false)
+    private User user;
 }

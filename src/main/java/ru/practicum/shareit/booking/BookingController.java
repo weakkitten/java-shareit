@@ -36,19 +36,21 @@ public class BookingController {
 
     @GetMapping
     public List<BookingDtoGet> getAllUserBooking(@RequestHeader("X-Sharer-User-Id") int bookerId,
-                                              @RequestParam(defaultValue = "ALL") String state) {
-        return service.getAllUserBooking(bookerId, state);
+                                                 @RequestParam(defaultValue = "ALL") String state,
+                                                 @RequestParam(name = "from",
+                                                               defaultValue = "0") int from,
+                                                 @RequestParam(name = "size",
+                                                               defaultValue = "20") int size) {
+        return service.getAllUserBooking(bookerId, state, from, size);
     }
 
     @GetMapping("/owner")
     public List<BookingDtoGet> getAllOwnerBooking(@RequestHeader("X-Sharer-User-Id") int userId,
-                                                @RequestParam(defaultValue = "ALL") String state) {
-        System.out.println("ЧЕ У НАС ТУТ? - " + service.getAllOwnerBooking(userId, state));
-        System.out.println("ЧЕ У НАС ТУТ? - " + service.getAllOwnerBooking(userId, state));
-        System.out.println("ЧЕ У НАС ТУТ? - " + service.getAllOwnerBooking(userId, state));
-        System.out.println("ЧЕ У НАС ТУТ? - " + service.getAllOwnerBooking(userId, state));
-        System.out.println("ЧЕ У НАС ТУТ? - " + service.getAllOwnerBooking(userId, state));
-        System.out.println("ЧЕ У НАС ТУТ? - " + service.getAllOwnerBooking(userId, state));
-        return service.getAllOwnerBooking(userId, state);
+                                                  @RequestParam(defaultValue = "ALL") String state,
+                                                  @RequestParam(name = "from",
+                                                                defaultValue = "0") int from,
+                                                  @RequestParam(name = "size",
+                                                                defaultValue = "20") int size) {
+        return service.getAllOwnerBooking(userId, state, from, size);
     }
 }

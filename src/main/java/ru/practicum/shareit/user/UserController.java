@@ -25,7 +25,7 @@ public class UserController {
         return service.addUser(user);
     }
 
-    @PatchMapping("/{userId}")//Доработать
+    @PatchMapping("/{userId}")
     public UserDto updateUser(@PathVariable int userId,@RequestBody UserDtoUpdate user) {
         log.info("Начало операции по обновлению пользователя - " + user);
         return service.updateUser(userId, user);
