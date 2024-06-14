@@ -2,31 +2,29 @@ package ru.practicum.shareit.user;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.user.Client.UserClient;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserDtoUpdate;
-import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.service.UserService;
-
-import javax.validation.Valid;
-import java.util.List;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping(path = "/users")
 @Slf4j
 @RequiredArgsConstructor
 public class UserController {
-    private final UserService service;
+    private final UserClient service;
 
     @PostMapping
-    public UserDto createUser(@Valid @RequestBody UserDto user) {
+    public ResponseEntity<Object> createUser(@Valid @RequestBody UserDto user) {
         log.info("Начало операции по добавлению пользователя - " + user);
         log.info("Проверка email");
-        return service.addUser(user);
+        return service.createUser(user);
     }
 
     @PatchMapping("/{userId}")
-    public UserDto updateUser(@PathVariable int userId,@RequestBody UserDtoUpdate user) {
+    public ResponseEntity<Object> updateUser(@PathVariable int userId,@RequestBody UserDtoUpdate user) {
         log.info("Начало операции по обновлению пользователя - " + user);
         return service.updateUser(userId, user);
     }
@@ -38,13 +36,13 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    public UserDto getUserById(@PathVariable int userId) {
+    public ResponseEntity<Object> getUserById(@PathVariable int userId) {
         log.info("Начало операции по поиску пользователя с id - " + userId);
-        return service.getUser(userId);
+        return service.getUserById(userId);
     }
 
     @GetMapping
-    public List<User> getAllUsers() {
+    public ResponseEntity<Object> getAllUsers() {
         log.info("Начало операции по выгрузке всех пользователей");
         return service.getAllUsers();
     }

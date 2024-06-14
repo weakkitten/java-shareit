@@ -1,35 +1,38 @@
 package ru.practicum.shareit.request;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.request.Client.RequestClient;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
-import ru.practicum.shareit.request.dto.ItemRequestDtoGet;
-import ru.practicum.shareit.request.dto.RequestDtoWithListItem;
 
-import java.util.List;
-
-@RestController
+@Controller
 @RequestMapping(path = "/requests")
 @Slf4j
 @RequiredArgsConstructor
+@Validated
 public class ItemRequestController {
+    @Autowired
     private final RequestClient service;
 
     @PostMapping
-    public ItemRequestDtoGet createRequest(@RequestHeader("X-Sharer-User-Id") int userId,
-                                           @RequestBody @Valid ItemRequestDto dto) {
-        return service.createRequest(dto, userId);
+    public ResponseEntity<Object> createRequest(@RequestHeader("X-Sharer-User-Id") int userId,
+                                                @Valid @RequestBody ItemRequestDto dto) {
+        return service.createRequest(userId, dto);
     }
 
     @GetMapping
-    public List<RequestDtoWithListItem> getAllUserRequest(@RequestHeader("X-Sharer-User-Id") int userId) {
+    public ResponseEntity<Object> getAllUserRequest(@RequestHeader("X-Sharer-User-Id") int userId) {
         return service.getAllUserRequest(userId);
     }
 
     @GetMapping("/all")
-    public List<RequestDtoWithListItem> getAllOtherUsersRequest(@RequestHeader("X-Sharer-User-Id") int userId,
+    public ResponseEntity<Object> getAllOtherUsersRequest(@RequestHeader("X-Sharer-User-Id") int userId,
                                           @RequestParam(name = "from",
                                                         defaultValue = "0") int from,
                                           @RequestParam(name = "size",
@@ -38,8 +41,8 @@ public class ItemRequestController {
     }
 
     @GetMapping("/{requestId}")
-    public RequestDtoWithListItem getRequestById(@RequestHeader("X-Sharer-User-Id") int userId,
+    public ResponseEntity<Object> getRequestById(@RequestHeader("X-Sharer-User-Id") int userId,
                                                  @PathVariable int requestId) {
-        return service.getRequest(userId, requestId);
+        return service.getRequestById(userId, requestId);
     }
 }

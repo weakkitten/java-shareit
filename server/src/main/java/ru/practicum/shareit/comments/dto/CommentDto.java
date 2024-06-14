@@ -1,8 +1,7 @@
 package ru.practicum.shareit.comments.dto;
 
+import jakarta.validation.constraints.NotEmpty;
 import lombok.*;
-
-import javax.validation.constraints.NotEmpty;
 import java.time.LocalDateTime;
 
 @Getter
