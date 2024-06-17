@@ -1,11 +1,11 @@
 package ru.practicum.shareit.booking.dto;
 
-import jakarta.validation.constraints.Future;
 import lombok.Builder;
 import lombok.Data;
-import org.antlr.v4.runtime.misc.NotNull;
 import ru.practicum.shareit.utility.Status;
 
+import javax.validation.constraints.Future;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Data
