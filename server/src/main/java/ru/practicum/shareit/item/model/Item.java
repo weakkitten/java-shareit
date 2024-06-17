@@ -1,0 +1,32 @@
+package ru.practicum.shareit.item.model;
+
+import jakarta.persistence.*;
+import lombok.*;
+import ru.practicum.shareit.user.model.User;
+
+@Entity
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@ToString
+@EqualsAndHashCode
+@Table(name = "items", schema = "public",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = "id")
+        })
+public class Item {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+    private String name;
+    private String description;
+    private boolean available;
+    @Column(name = "owner_id")
+    private int owner;
+    private int request;
+    @ManyToOne
+    @JoinColumn(name = "owner_id", insertable = false, updatable = false)
+    private User user;
+}
