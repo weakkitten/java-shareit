@@ -2,6 +2,9 @@ package ru.practicum.shareit.booking;
 
 import java.util.Map;
 
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -23,7 +26,7 @@ public class BookingClient extends BaseClient {
         super(
                 builder
                         .uriTemplateHandler(new DefaultUriBuilderFactory(serverUrl + API_PREFIX))
-                        .requestFactory(HttpComponentsClientHttpRequestFactory::new)
+                        .requestFactory(() -> new HttpComponentsClientHttpRequestFactory())
                         .build()
         );
     }
@@ -36,6 +39,7 @@ public class BookingClient extends BaseClient {
         );
         return get("?state={state}&from={from}&size={size}", userId, parameters);
     }
+
 
     public ResponseEntity<Object> bookItem(long userId, BookItemRequestDto requestDto) {
         return post("", userId, requestDto);
