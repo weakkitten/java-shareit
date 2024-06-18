@@ -7,7 +7,8 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.user.Client.UserClient;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserDtoUpdate;
-import jakarta.validation.Valid;
+
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping(path = "/users")

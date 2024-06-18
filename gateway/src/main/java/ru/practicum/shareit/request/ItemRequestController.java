@@ -1,6 +1,5 @@
 package ru.practicum.shareit.request;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +9,8 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.request.Client.RequestClient;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
+
+import javax.validation.Valid;
 
 @Controller
 @RequestMapping(path = "/requests")
