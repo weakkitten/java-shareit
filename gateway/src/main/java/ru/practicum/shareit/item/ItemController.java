@@ -40,7 +40,8 @@ public class ItemController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<Object> searchItem(@RequestParam String text, @RequestHeader("X-Sharer-User-Id") int userId) {
+    public ResponseEntity<Object> searchItem(@RequestHeader("X-Sharer-User-Id") int userId,
+                                             @RequestParam String text) {
         return service.searchItem(text, userId);
     }
 

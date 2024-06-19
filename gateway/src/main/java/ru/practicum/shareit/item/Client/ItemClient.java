@@ -48,15 +48,14 @@ public class ItemClient extends BaseClient {
         return get("", id, parameters);
     }
 
-    public ResponseEntity<Object> searchItem(@RequestParam String text, long userId) {
+    public ResponseEntity<Object> searchItem(String text, long userId) {
         Map<String, Object> parameters = Map.of(
                 "text", text
         );
-        return get("/search", userId, parameters);
+        return get("/search?text={text}", userId, parameters);
     }
 
-    public ResponseEntity<Object> createComment(@RequestHeader("X-Sharer-User-Id") int userId,
-                                    @PathVariable int itemId, @RequestBody CommentDto comment) {
+    public ResponseEntity<Object> createComment(int userId, int itemId, CommentDto comment) {
         return post("/" + itemId, userId, comment);
     }
 }

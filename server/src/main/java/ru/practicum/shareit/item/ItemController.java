@@ -39,11 +39,13 @@ public class ItemController {
                                                                   defaultValue = "0") int from,
                                                     @RequestParam(name = "size",
                                                                   defaultValue = "20") int size) {
+        System.out.println("А че почему я тут");
         return service.getAllUserItems(id, from, size);
     }
 
     @GetMapping("/search")
-    public List<ItemDtoGet> searchItem(@RequestParam String text) {
+    public List<ItemDtoGet> searchItem(@RequestHeader("X-Sharer-User-Id") int id,
+                                       @RequestParam(name = "text") String text) {
         return service.searchItem(text);
     }
 
