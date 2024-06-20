@@ -1,11 +1,6 @@
 package ru.practicum.shareit.booking;
 
-import java.util.List;
 import java.util.Map;
-
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -52,16 +47,15 @@ public class BookingClient extends BaseClient {
     }
 
     public ResponseEntity<Object> updateBooking(int userId, int bookingId, Boolean approved) {
-        return patch("/"+ bookingId + "?approved=" + approved, userId);
+        return patch("/" + bookingId + "?approved=" + approved, userId);
     }
 
-    @GetMapping("/owner")
     public ResponseEntity<Object> getAllOwnerBooking(long userId, BookingState state, int from, int size) {
         Map<String, Object> parameters = Map.of(
                 "state", state.name(),
                 "from", from,
                 "size", size
         );
-        return get("/owner?state={state}&from={from}&size={size}", userId, parameters );
+        return get("/owner?state={state}&from={from}&size={size}", userId, parameters);
     }
 }
