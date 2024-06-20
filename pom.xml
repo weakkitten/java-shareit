@@ -11,9 +11,16 @@
 
 	<groupId>ru.practicum</groupId>
 	<artifactId>shareit</artifactId>
+	<packaging>pom</packaging>
 	<version>0.0.1-SNAPSHOT</version>
 
 	<name>ShareIt</name>
+
+	<modules>
+		<module>gateway</module>
+		<module>server</module>
+        <module>test</module>
+    </modules>
 
 	<properties>
 		<java.version>11</java.version>
@@ -111,7 +118,6 @@
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>0.8.7</version>
 				<executions>
 					<execution>
 						<goals>
@@ -161,7 +167,7 @@
 						<dependency>
 							<groupId>com.puppycrawl.tools</groupId>
 							<artifactId>checkstyle</artifactId>
-							<version>10.17.0</version>
+							<version>10.3</version>
 						</dependency>
 					</dependencies>
 				</plugin>
