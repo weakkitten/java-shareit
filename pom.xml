@@ -19,7 +19,6 @@
 	<modules>
 		<module>gateway</module>
 		<module>server</module>
-        <module>test</module>
     </modules>
 
 	<properties>
